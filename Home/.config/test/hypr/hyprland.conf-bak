@@ -16,8 +16,9 @@ $scrPath = $HOME/.local/share/bin # set scripts path
 
 # See https://wiki.hyprland.org/Configuring/Monitors/
 
-monitor = ,preferred,auto,auto
-
+# monitor = ,preferred,auto,auto
+monitor = eDP-1, 1920x1080@120,1920x0,1
+monitor = HDMI-A-1, 1920x1080@144,0x0,1
 
 # █░░ ▄▀█ █░█ █▄░█ █▀▀ █░█
 # █▄▄ █▀█ █▄█ █░▀█ █▄▄ █▀█
@@ -34,8 +35,8 @@ exec-once = blueman-applet # systray app for Bluetooth
 exec-once = udiskie --no-automount --smart-tray # front-end that allows to manage removable media
 exec-once = nm-applet --indicator # systray app for Network/Wifi
 exec-once = dunst # start notification demon
-exec-once = wl-paste --type text --watch cliphist store # clipboard store text data
-exec-once = wl-paste --type image --watch cliphist store # clipboard store image data
+# exec-once = wl-paste --type text --watch cliphist store # clipboard store text data
+# exec-once = wl-paste --type image --watch cliphist store # clipboard store image data
 exec-once = $scrPath/swwwallpaper.sh # start wallpaper daemon
 exec-once = $scrPath/batterynotify.sh # battery notification
 
@@ -55,6 +56,7 @@ env = QT_WAYLAND_DISABLE_WINDOWDECORATION,1
 env = QT_AUTO_SCREEN_SCALE_FACTOR,1
 env = MOZ_ENABLE_WAYLAND,1
 env = GDK_SCALE,1
+env = ELECTRON_OZONE_PLATFORM_HINT,wayland
 
 
 # █ █▄░█ █▀█ █░█ ▀█▀
@@ -63,7 +65,9 @@ env = GDK_SCALE,1
 # See https://wiki.hyprland.org/Configuring/Variables/
 
 input {
-    kb_layout = us
+    kb_layout = us, ara
+    kb_variant = ,
+    kb_options = grp:win_space_toggle
     follow_mouse = 1
 
     touchpad {
@@ -71,7 +75,7 @@ input {
     }
 
     sensitivity = 0
-    force_no_accel = 1
+    force_no_accel = 0
     numlock_by_default = true
 }
 
@@ -79,7 +83,12 @@ input {
 
 device {
     name = epic mouse V1
-    sensitivity = -0.5
+    sensitivity = 1
+}
+
+device {
+    name = msft0002:00-04f3:31ad-touchpad
+    sensitivity = -0.9
 }
 
 # See https://wiki.hyprland.org/Configuring/Variables/
@@ -131,9 +140,7 @@ source = ~/.config/hypr/animations.conf
 source = ~/.config/hypr/keybindings.conf
 source = ~/.config/hypr/windowrules.conf
 source = ~/.config/hypr/themes/common.conf # shared theme settings
-# hyprlang noerror true
 source = ~/.config/hypr/themes/theme.conf # theme specific settings
-# hyprlang noerror false
 source = ~/.config/hypr/themes/colors.conf # wallbash color override
 source = ~/.config/hypr/monitors.conf # initially empty, to be configured by user and remains static
 source = ~/.config/hypr/userprefs.conf # initially empty, to be configured by user and remains static
@@ -141,3 +148,4 @@ source = ~/.config/hypr/userprefs.conf # initially empty, to be configured by us
 # Note: as userprefs.conf is sourced at the end, settings configured in this file will override the defaults
 source = ~/.config/hypr/nvidia.conf # auto sourced vars for nvidia
 
+env = NIXOS_OZONE_WL=1
