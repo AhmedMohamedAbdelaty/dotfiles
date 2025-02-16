@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 import pytz
 
 def fetch_prayer_times():
-    url = "http://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=2"
+    url = "http://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5"
     response = requests.get(url)
     data = response.json()
     return {k: v for k, v in data['data']['timings'].items()
