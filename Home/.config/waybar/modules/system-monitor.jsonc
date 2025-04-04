@@ -1,0 +1,10 @@
+{
+    "custom/system-monitor": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 5,
+        "exec": "~/.config/waybar/system-monitor.py",
+        "on-click": "kitty --start-as=fullscreen --title btop btop",
+        "tooltip": true
+    }
+}

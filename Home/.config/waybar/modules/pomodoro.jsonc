@@ -1,0 +1,17 @@
+{
+    "custom/pomodoro": {
+        "format": "{icon} {}",
+        "format-icons": {
+            "inactive": "󰔛",
+            "active": "󱎫",
+            "break": "󰒲"
+        },
+        "return-type": "json",
+        "exec": "waybar-pomodoro",
+        "interval": 1,
+        "exec-if": "pgrep waybar-pomodoro",
+        "on-click": "waybar-pomodoro toggle",
+        "on-click-right": "waybar-pomodoro end",
+        "on-click-middle": "waybar-pomodoro start-break"
+    }
+}

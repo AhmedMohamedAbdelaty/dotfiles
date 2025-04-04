@@ -8,11 +8,11 @@
 }
 
 @import "theme.css";
+@import "colors.css";
 
 window#waybar {
     background: @bar-bg;
 }
-
 
 tooltip {
     background: @main-bg;
@@ -21,15 +21,124 @@ tooltip {
     border-width: 0px;
 }
 
+/* Enhanced Media Player Styling */
 #custom-mpwidget {
-    padding: 0 10px;
-    margin: 6px 4px;
-    border-radius: 8px;
-    background-color: #11111B;
-    color: white;
-    font-family: "Janna lt";
+    padding: 0 12px;
+    margin: 6px 8px;
+    border-radius: 12px;
+    background-color: @mediaplayer-bg;
+    color: @mediaplayer-fg;
+    font-family: "JetBrainsMono Nerd Font", "Janna lt";
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 100px;
+    font-size: 11px;
+    min-height: 22px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    /* position: relative; */
+    /* overflow: hidden; */
 }
 
+/* Active state with dynamic glow effect */
+#custom-mpwidget.playing {
+    background: linear-gradient(45deg, #11111B, #1e1e2e);
+    box-shadow: 0 0 8px rgba(166, 227, 161, 0.4);
+    border-bottom: 2px solid #a6e3a1;
+    color: @mediaplayer-playing;
+    text-shadow: 0 0 2px rgba(166, 227, 161, 0.3);
+}
+
+/* Paused state with subtle styling */
+#custom-mpwidget.paused {
+    background: linear-gradient(45deg, #11111B, #181825);
+    opacity: 0.9;
+    border-bottom: 2px solid #74c7ec;
+    color: @mediaplayer-paused;
+}
+
+/* Stopped state with muted styling */
+#custom-mpwidget.stopped {
+    opacity: 0.7;
+    border-bottom: 2px solid #6c7086;
+    color: @mediaplayer-stopped;
+}
+
+/* Player-specific styling with accent colors and improved visuals */
+#custom-mpwidget.custom-spotify {
+    border-left: 3px solid @spotify-accent;
+    background-color: alpha(@spotify-accent, 0.1);
+}
+
+#custom-mpwidget.custom-spotify.playing {
+    box-shadow: 0 0 8px alpha(@spotify-accent, 0.5);
+    border-bottom: 2px solid @spotify-accent;
+}
+
+#custom-mpwidget.custom-firefox {
+    border-left: 3px solid @firefox-accent;
+    background-color: alpha(@firefox-accent, 0.1);
+}
+
+#custom-mpwidget.custom-firefox.playing {
+    box-shadow: 0 0 8px alpha(@firefox-accent, 0.5);
+    border-bottom: 2px solid @firefox-accent;
+}
+
+#custom-mpwidget.custom-chromium {
+    border-left: 3px solid @chromium-accent;
+    background-color: alpha(@chromium-accent, 0.1);
+}
+
+#custom-mpwidget.custom-chromium.playing {
+    box-shadow: 0 0 8px alpha(@chromium-accent, 0.5);
+    border-bottom: 2px solid @chromium-accent;
+}
+
+#custom-mpwidget.custom-vlc {
+    border-left: 3px solid @vlc-accent;
+    background-color: alpha(@vlc-accent, 0.1);
+}
+
+#custom-mpwidget.custom-vlc.playing {
+    box-shadow: 0 0 8px alpha(@vlc-accent, 0.5);
+    border-bottom: 2px solid @vlc-accent;
+}
+
+#custom-mpwidget.custom-no-player {
+    border-left: 3px solid #6c7086;
+    opacity: 0.6;
+}
+
+/* Enhanced hover effect for media player widget */
+#custom-mpwidget:hover {
+    background-color: #1e1e2e;
+    /* transform: translateY(-1px); */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    /* filter: brightness(1.1); */
+}
+
+/* Add subtle pulse animation for playing state */
+@keyframes pulse {
+    0% { box-shadow: 0 0 8px rgba(166, 227, 161, 0.3); }
+    50% { box-shadow: 0 0 12px rgba(166, 227, 161, 0.5); }
+    100% { box-shadow: 0 0 8px rgba(166, 227, 161, 0.3); }
+}
+
+#custom-mpwidget.playing {
+    animation: pulse 3s infinite ease-in-out;
+}
+
+/* Player-specific pulse animations */
+#custom-mpwidget.custom-spotify.playing {
+    animation: spotify-pulse 3s infinite ease-in-out;
+}
+
+@keyframes spotify-pulse {
+    0% { box-shadow: 0 0 8px alpha(@spotify-accent, 0.3); }
+    50% { box-shadow: 0 0 12px alpha(@spotify-accent, 0.5); }
+    100% { box-shadow: 0 0 8px alpha(@spotify-accent, 0.3); }
+}
+
+/* Rest of your CSS styles */
 #workspaces button {
     box-shadow: none;
     text-shadow: none;
@@ -61,11 +170,6 @@ tooltip {
     color: @wb-hvr-fg;
     animation: ws_hover 20s ease-in-out 1;
     transition: all 0.3s cubic-bezier(.55, -0.68, .48, 1.682);
-}
-
-#workspaces button.empty {
-    background: #ff0000; /* Change this to your desired color for empty workspaces */
-    color: #ffffff; /* Change this to your desired text color for empty workspaces */
 }
 
 #taskbar button {
@@ -190,4 +294,90 @@ tooltip {
     border-radius: 7px 0px 0px 7px;
     margin-left: 9px;
     padding-left: 3px;
+}
+
+/* Prayer times module styling */
+#custom-prayertimes {
+    color: #b4befe;
+    padding: 0 10px;
+}
+
+#custom-prayertimes.prayer-imminent {
+    color: #f38ba8;
+    font-weight: bold;
+    animation: blink 1s infinite alternate;
+}
+
+#custom-prayertimes.prayer-approaching {
+    color: #fab387;
+    font-weight: bold;
+}
+
+#custom-prayertimes.prayer-normal {
+    color: #a6e3a1;
+}
+
+#custom-prayertimes.cached {
+    color: #cba6f7;
+    font-style: italic;
+}
+
+#custom-prayertimes-error {
+    color: #f38ba8;
+}
+
+@keyframes blink {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.5;
+    }
+}
+
+/* Pomodoro styling */
+#custom-pomodoro {
+    color: #fab387;
+    padding: 0 10px;
+}
+
+#custom-pomodoro.pomodoro-work-active {
+    color: #a6e3a1;
+    font-weight: bold;
+}
+
+#custom-pomodoro.pomodoro-break-active {
+    color: #89b4fa;
+    font-style: italic;
+}
+
+#custom-pomodoro.pomodoro-inactive {
+    color: #6c7086;
+}
+
+/* System monitor styling - enhanced and simplified */
+#custom-system-monitor {
+    font-family: "JetBrainsMono Nerd Font";
+    padding: 0 8px;
+    font-size: 9px;  /* Smaller font size */
+    font-weight: normal;  /* Less bold */
+    margin: 5px 0;
+    border-radius: 6px;
+    background-color: #11111B;  /* Match with other modules */
+}
+
+#custom-system-monitor.system-monitor-warning {
+    color: #fab387;
+    border-bottom: 1px solid #fab387;
+}
+
+#custom-system-monitor.system-monitor-critical {
+    color: #f38ba8;
+    animation: blink 1s infinite alternate;
+    border-bottom: 1px solid #f38ba8;
+}
+
+#custom-system-monitor.system-monitor-normal {
+    color: #a6e3a1;
+    border-bottom: 1px solid #a6e3a1;
 }

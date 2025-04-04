@@ -53,11 +53,6 @@ tooltip {
     transition: all 0.3s cubic-bezier(.55,-0.68,.48,1.682);
 }
 
-#workspaces button.empty {
-    background: #ff0000; /* Change this to your desired color for empty workspaces */
-    color: #ffffff; /* Change this to your desired text color for empty workspaces */
-}
-
 #taskbar button {
     box-shadow: none;
 	text-shadow: none;

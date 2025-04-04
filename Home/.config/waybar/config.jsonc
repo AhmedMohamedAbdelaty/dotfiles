@@ -1,8 +1,9 @@
 {
+    "output": ["HDMI-A-1", "eDP-1"],
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "height": 31,
+    "height": 32,
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
@@ -12,10 +13,11 @@
         "custom/mpwidget",
         "custom/padd",
         "custom/l_end",
-        "cpu",
-        "memory",
-        "custom/cpuinfo",
-        "custom/gpuinfo",
+        // "cpu",
+        // "memory",
+        "custom/system-monitor",
+        // "custom/cpuinfo",
+        // "custom/gpuinfo",
         "custom/r_end",
         "custom/l_end",
         "idle_inhibitor",
@@ -31,12 +33,14 @@
         "custom/padd",
         "custom/l_end",
         "wlr/taskbar",
+        "custom/mediaplayer",
         "custom/r_end",
         "custom/padd"
     ],
     "modules-right": [
         "custom/padd",
         "custom/l_end",
+        "custom/pomodoro",
         "backlight",
         "network",
         "pulseaudio",
@@ -61,17 +65,19 @@
 
     "custom/mpwidget": {
         "exec": "/usr/bin/python3 /home/ahmed/.config/waybar/mediaplayer.py",
-        "format": "♫ {}",
         "return-type": "json",
+        "max-length": 40,
         "on-click": "playerctl play-pause",
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous",
-        "on-click-right": "/home/ahmed/.config/waybar/player-switcher-script.sh"
+        "on-click-right": "/home/ahmed/.config/waybar/player-switcher-script.sh",
+        "escape": true
     },
 
     "cpu": {
         "interval": 10,
         "format": "󰍛 {usage}%",
+        "max-length": 10,
         "rotate": 0,
         "format-alt": "{icon0}{icon1}{icon2}{icon3}",
         "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"]
@@ -88,11 +94,11 @@
         "rotate": 0,
         "format-m": "󰾅 {used}GB",
         "format-h": "󰓅 {used}GB",
-        "format-c": " {used}GB",
+        "format-c": " {used}GB",
         "format-alt": "󰾆 {percentage}%",
         "max-length": 10,
         "tooltip": true,
-        "tooltip-format": "󰾆 {percentage}%\n {used:0.1f}GB/{total:0.1f}GB"
+        "tooltip-format": "󰾆 {percentage}%\n {used:0.1f}GB/{total:0.1f}GB"
     },
 
     "custom/cpuinfo": {
@@ -190,8 +196,7 @@
         "disable-scroll": false,
         "on-scroll-up": "hyprctl dispatch workspace -1",
         "on-scroll-down": "hyprctl dispatch workspace +1",
-        "persistent-workspaces": {},
-        "empty-class": "empty"
+        "persistent-workspaces": {}
     },
 
     "wlr/taskbar": {
@@ -427,5 +432,39 @@
         "format": "  ",
         "interval": "once",
         "tooltip": false
+    },
+
+    "custom/pomodoro": {
+        "exec": "python3 ~/.config/waybar/waybar-pomodoro.py",
+        "return-type": "json",
+        "interval": 1,
+        "format": "{icon} {text}",
+        "format-icons": {
+            "inactive": "󰔛",
+            "work": "󱎫",
+            "break": "󰒲"
+        },
+        "on-click": "python3 ~/.config/waybar/waybar-pomodoro.py toggle",
+        "on-click-right": "python3 ~/.config/waybar/waybar-pomodoro.py end",
+        "on-click-middle": "python3 ~/.config/waybar/waybar-pomodoro.py start-break"
+    },
+
+    "custom/system-monitor": {
+        "exec": "~/.config/waybar/system-monitor.py",
+        "return-type": "json",
+        "interval": 5,
+        "format": "{}",
+        "on-click": "kitty --start-as=fullscreen --title btop btop",
+        "tooltip": true
+    },
+
+    "custom-mediaplayer": {
+        "exec": "playerctl -a metadata --format '{\"text\": \"{{title}}\", \"tooltip\": \"{{playerName}} : {{title}}\", \"alt\": \"{{status}}\", \"class\": \"{{status}}\"}' -F",
+        "format": "{}",
+        "return-type": "json",
+        "max-length": 30,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
     }
 }

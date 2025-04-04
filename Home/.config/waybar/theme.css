@@ -8,3 +8,10 @@
 
 @define-color wb-hvr-bg #f5c2e7;
 @define-color wb-hvr-fg #313244;
+
+/* Media player theme colors */
+@define-color mediaplayer-bg #11111b;
+@define-color mediaplayer-fg #cdd6f4;
+@define-color mediaplayer-playing #a6e3a1;
+@define-color mediaplayer-paused #f5c2e7;
+@define-color mediaplayer-stopped #6c7086;

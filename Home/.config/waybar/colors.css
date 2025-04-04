@@ -18,3 +18,14 @@
 @define-color color13 #4592A1;
 @define-color color14 #65BDBD;
 @define-color color15 #ABD3D3;
+
+/* Media player colors */
+@define-color mediaplayer-bg #11111B;
+@define-color mediaplayer-fg #CAE6E6;
+@define-color mediaplayer-playing #a6e3a1;
+@define-color mediaplayer-paused #f5c2e7;
+@define-color mediaplayer-stopped #6c7086;
+@define-color spotify-accent #1DB954;
+@define-color firefox-accent #FF9500;
+@define-color chromium-accent #4285F4;
+@define-color vlc-accent #FF8800;
