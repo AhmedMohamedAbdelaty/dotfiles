@@ -131,10 +131,11 @@ def time_until_next_prayer(prayer_times):
         notification_type = "10min"
         if last_notification_type != notification_type or (current_time - last_notification_time) > 240:
             should_notify = True
-    elif minutes_remaining <= 0:
-        notification_type = "now"
-        if last_notification_type != notification_type or (current_time - last_notification_time) > 60:  # 1 minute
-            should_notify = True
+    # only notify within a small grace window after time hits zero
+    elif -0.5 <= minutes_remaining <= 0:
+         notification_type = "now"
+         if last_notification_type != notification_type or (current_time - last_notification_time) > 60:  # 1 minute
+             should_notify = True
 
     if should_notify:
         try:
@@ -153,13 +154,15 @@ def time_until_next_prayer(prayer_times):
 
             # Update state file
             try:
-                with open(state_file, 'w') as f:
+                tmp = f"{state_file}.tmp"
+                with open(tmp, 'w') as f:
                     json.dump({
                         'last_time': current_time,
                         'last_type': notification_type
                     }, f)
-            except:
-                pass
+                os.replace(tmp, state_file)  # atomic
+            except Exception: # Added a general exception handler
+                pass # Non-critical for state saving failure
 
         except Exception as e:
             pass # Non-critical

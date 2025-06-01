@@ -294,15 +294,15 @@ def on_metadata_update(player, metadata_obj_unused, manager_unused):
         if track_display_str not in ['Unknown Media', 'ADVERTISEMENT', 'No media', '']:
             text_display_parts.append(f" {track_display_str}{source_display_str}")
         elif track_display_str == 'ADVERTISEMENT':
-             text_display_parts.append(" ADVERTISEMENT")
+            text_display_parts.append(" ADVERTISEMENT")
         # If Unknown Media, No media, or empty, icons are already included.
         # Adding a fallback for completely empty track_display_str just in case.
         elif not track_display_str and not (is_multi_player or is_multi_instance):
-             text_display_parts.append(" No Media")
+            text_display_parts.append(" No Media")
     else: # No metadata, default display
         # Only add "No Media" if it's a single player with no other indicators
         if not is_multi_player and not is_multi_instance:
-             text_display_parts.append(" No Media")
+            text_display_parts.append(" No Media")
 
     formatted_text_output = "".join(text_display_parts).strip()
     # Fallback if somehow the text is still empty

@@ -31,13 +31,18 @@ def main():
 
     # State file to prevent unnecessary notifications
     state_file = os.path.expanduser("~/.cache/waybar-notifications-state.json")
-    last_state = {}
 
+    # Ensure cache directory exists
+    cache_dir = os.path.dirname(state_file)
+    os.makedirs(cache_dir, exist_ok=True)
+
+    last_state = {}
     try:
         if os.path.exists(state_file):
             with open(state_file, 'r') as f:
                 last_state = json.load(f)
-    except:
+    except (json.JSONDecodeError, IOError, OSError) as e:
+        # Invalid or unreadable state file, start fresh
         pass
 
     current_state = {'count': count, 'dnd': dnd}
@@ -45,9 +50,13 @@ def main():
     # Only update state file if something actually changed
     if current_state != last_state:
         try:
-            with open(state_file, 'w') as f:
+            # Write to temporary file first for atomic update
+            temp_file = state_file + '.tmp'
+            with open(temp_file, 'w') as f:
                 json.dump(current_state, f)
-        except:
+            os.rename(temp_file, state_file)
+        except (IOError, OSError) as e:
+            # Could add logging here: print(f"Error writing state file: {e}", file=sys.stderr)
             pass
 
     if dnd:

@@ -12,7 +12,7 @@
         "custom/padd", "custom/mpwidget", "custom/l_end",
         "custom/system-monitor", "custom/r_end",
         "custom/l_end", "idle_inhibitor", "clock", "custom/r_end",
-        "custom/l_end", "hyprland/workspaces", "custom/hyprland/window", "custom/r_end", "custom/padd", "custom/prayertimes" // Added hyprland/window here as it's defined
+        "custom/l_end", "hyprland/workspaces", "hyprland/window", "custom/r_end", "custom/padd", "custom/prayertimes"
     ],
     "modules-center": [
         "custom/padd", "custom/l_end", "wlr/taskbar", "custom/r_end", "custom/padd"
@@ -22,16 +22,6 @@
         "custom/l_end", "custom/pomodoro", "privacy", "tray", "battery", "custom/r_end",
         "custom/padd", "custom/l_end", "custom/wallchange", "custom/theme", "custom/cliphist", "custom/power", "custom/r_end", "custom/padd"
     ],
-
-    // These modules are defined but not currently placed in modules-left/center/right.
-    // If you want them, add them to one of those arrays above.
-    // "cpu": { /* ... */ },
-    // "memory": { /* ... */ },
-    // "custom/cpuinfo": { /* ... */ },
-    // "custom/gpuinfo": { /* ... */ },
-    // "custom/gpuinfo#nvidia": { /* ... */ },
-    // "custom/gpuinfo#amd": { /* ... */ },
-    // "custom/gpuinfo#intel": { /* ... */ },
 
     "idle_inhibitor": {
         "format": "{icon}",
@@ -85,12 +75,12 @@
         "tooltip-format": "{format_source} {source_desc} // {source_volume}%", "scroll-step": 5
     },
     "custom/updates": {
-        "exec": "systemupdate.sh", // Ensure this script is in PATH or use full path
+        "exec": "systemupdate.sh",
         "return-type": "json", "format": "{}", "rotate": 0,
         "on-click": "hyprctl dispatch exec 'systemupdate.sh up'", "interval": 86400, "tooltip": true, "signal": 20
     },
     "custom/keybindhint": {
-        "format": " ", "rotate": 0, "on-click": "keybinds_hint.sh" // Ensure this script is in PATH or use full path
+        "format": " ", "rotate": 0, "on-click": "keybinds_hint.sh"
     },
     "privacy": {
         "icon-size": 14, "icon-spacing": 5, "transition-duration": 250,
@@ -139,7 +129,7 @@
     "custom/mpwidget": {
         "exec": "~/.config/waybar/mediaplayer.py",
         "return-type": "json",
-        "format": "{text}", // mediaplayer.py returns a "text" field, so using {text} explicitly
+        "format": "{text}",
         "on-click": "~/.config/waybar/player-switcher-script.sh",
         "on-scroll-up": "playerctl volume 0.05+",
         "on-scroll-down": "playerctl volume 0.05-",
@@ -149,7 +139,7 @@
         "rotate": 0
     },
     "custom/pomodoro": {
-        "format": "{icon} {text}", // Assuming waybar-pomodoro.py returns "text" and "icon" in its JSON
+        "format": "{icon} {text}",
         "format-icons": {
             "inactive": "󰔛",
             "active": "󱎫",
@@ -158,14 +148,13 @@
         "return-type": "json",
         "exec": "~/.config/waybar/waybar-pomodoro.py",
         "interval": 1,
-        "exec-if": "pgrep waybar-pomodoro",
         "on-click": "~/.config/waybar/waybar-pomodoro.py toggle",
         "on-click-right": "~/.config/waybar/waybar-pomodoro.py end",
         "on-click-middle": "~/.config/waybar/waybar-pomodoro.py start-break",
         "rotate": 0
     },
     "custom/system-monitor": {
-        "format": "{text}", // system-monitor.py returns a "text" field
+        "format": "{text}",
         "return-type": "json",
         "interval": 5,
         "exec": "~/.config/waybar/system-monitor.py",
@@ -201,7 +190,7 @@
         "interval": 1
     },
     "hyprland/window": {
-        "format": "  {}", // This might need to be "{title}" or similar if rewrite isn't catching all cases
+        "format": "  {}",
         "rotate": 0,
         "separate-outputs": true,
         "rewrite": {
