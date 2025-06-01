@@ -30,7 +30,7 @@ slider {
 }
 
 .floating-notifications.background .notification-row .notification-background .notification {
-  padding: 7px;
+  padding: 2px;
   border-radius: 12.6px;
 }
 
@@ -102,7 +102,7 @@ slider {
   margin: 18px;
   background-color: #1e1e2e;
   color: #cdd6f4;
-  padding: 14px;
+  padding: 5px;
 }
 
 .control-center .widget-title > label {
@@ -139,7 +139,7 @@ slider {
 }
 
 .control-center .notification-row .notification-background .notification {
-  padding: 7px;
+  padding: 3px;
   border-radius: 7px;
 }
 
@@ -339,4 +339,109 @@ slider {
 
 .image {
   padding-right: 0.5rem;
+}
+
+
+@define-color cc-bg rgba(17, 17, 27, 0.95);
+@define-color noti-bg rgba(91, 113, 138, 0.9);
+@define-color noti-bg-darker rgba(27, 39, 50, 0.95);
+@define-color noti-bg-hover rgba(27, 39, 50, 0.8);
+@define-color noti-bg-focus rgba(27, 39, 50, 0.9);
+@define-color noti-close-bg rgba(27, 39, 50, 0.8);
+@define-color noti-close-bg-hover rgba(46, 48, 48, 0.9);
+@define-color text-color #ffffff;
+@define-color accent-color #ca9ee6;
+
+.widget-dnd > switch {
+  background: rgba(91, 113, 138, 0.5);
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.widget-dnd > switch:checked {
+  background: @accent-color;
+}
+
+.widget-dnd > switch slider {
+  background: @text-color;
+  border-radius: 50%;
+}
+
+.widget-mpris {
+  margin: 12px;
+  padding: 12px;
+  background: rgba(91, 113, 138, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(202, 158, 230, 0.2);
+}
+
+.widget-mpris-player {
+  padding: 8px;
+  margin: 4px 0;
+}
+
+.widget-mpris-title {
+  font-weight: bold;
+  color: @text-color;
+}
+
+.widget-mpris-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.widget-volume {
+  margin: 12px;
+  padding: 12px;
+  background: rgba(91, 113, 138, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(202, 158, 230, 0.2);
+}
+
+.widget-volume scale {
+  margin: 8px 0;
+}
+
+.widget-volume scale trough {
+  /* background: rgba(255, 255, 255, 0.2); */
+  border-radius: 4px;
+  min-height: 6px;
+}
+
+.widget-volume scale highlight {
+  background: @accent-color;
+  border-radius: 4px;
+}
+
+.widget-volume scale slider {
+  background: @text-color;
+  border-radius: 50%;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.widget-backlight {
+  margin: 12px;
+  padding: 5px;
+  background: rgba(91, 113, 138, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(202, 158, 230, 0.2);
+}
+
+.widget-backlight scale trough {
+  /* background: rgba(255, 255, 255, 0.2); */
+  border-radius: 4px;
+  min-height: 6px;
+}
+
+.widget-backlight scale highlight {
+  background: #f9e2af;
+  border-radius: 4px;
+}
+
+.widget-backlight scale slider {
+  background: @text-color;
+  border-radius: 50%;
+  min-width: 16px;
+  min-height: 16px;
 }
