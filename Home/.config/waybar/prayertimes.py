@@ -6,10 +6,14 @@ import os
 from datetime import datetime, timedelta
 import pytz
 import time
+import subprocess
 
 # Cache file path
 CACHE_FILE = os.path.expanduser("~/.cache/waybar-prayertimes.json")
 CACHE_VALIDITY = 12 * 3600  # 12 hours in seconds
+
+# --- Startup Notification Flag ---
+STARTUP_NOTIFICATION_FLAG_FILE = os.path.expanduser("~/.cache/waybar-prayertimes-startup-notified.flag")
 
 def fetch_prayer_times():
     # Check for valid cache first
@@ -86,6 +90,8 @@ def time_until_next_prayer(prayer_times):
 
     # Calculate the class based on how close we are to the next prayer
     minutes_remaining = time_remaining.total_seconds() / 60
+
+    # Simplified class logic
     if minutes_remaining < 15:
         prayer_class = "prayer-imminent"
     elif minutes_remaining < 30:
@@ -93,11 +99,101 @@ def time_until_next_prayer(prayer_times):
     else:
         prayer_class = "prayer-normal"
 
+    # --- FIXED Notification Logic ---
+    # Only send notifications at specific intervals, not every execution
+    notification_id = "9991"
+    prayer_name_str = next_prayer[0]
+
+    # Create a state file to track last notification time
+    state_file = os.path.expanduser("~/.cache/prayer-notification-state.json")
+    last_notification_time = 0
+    last_notification_type = ""
+
+    try:
+        if os.path.exists(state_file):
+            with open(state_file, 'r') as f:
+                state = json.load(f)
+                last_notification_time = state.get('last_time', 0)
+                last_notification_type = state.get('last_type', '')
+    except:
+        pass
+
+    current_time = time.time()
+    should_notify = False
+    notification_type = ""
+
+    # Only notify at specific thresholds and avoid duplicate notifications
+    if 0 < minutes_remaining <= 5:
+        notification_type = "5min"
+        if last_notification_type != notification_type or (current_time - last_notification_time) > 240:  # 4 minutes
+            should_notify = True
+    elif 5 < minutes_remaining <= 10:
+        notification_type = "10min"
+        if last_notification_type != notification_type or (current_time - last_notification_time) > 240:
+            should_notify = True
+    elif minutes_remaining <= 0:
+        notification_type = "now"
+        if last_notification_type != notification_type or (current_time - last_notification_time) > 60:  # 1 minute
+            should_notify = True
+
+    if should_notify:
+        try:
+            if notification_type == "5min":
+                subprocess.run(["notify-send", "-u", "critical", "-r", notification_id,
+                                "Prayer Reminder", f"It's almost time for {prayer_name_str} (5 mins)"],
+                               timeout=1, check=False)
+            elif notification_type == "10min":
+                subprocess.run(["notify-send", "-u", "normal", "-r", notification_id,
+                                "Prayer Reminder", f"{prayer_name_str} in 10 minutes"],
+                               timeout=1, check=False)
+            elif notification_type == "now":
+                subprocess.run(["notify-send", "-u", "critical", "-r", notification_id,
+                                "Prayer Reminder", f"It's time for {prayer_name_str}!"],
+                               timeout=1, check=False)
+
+            # Update state file
+            try:
+                with open(state_file, 'w') as f:
+                    json.dump({
+                        'last_time': current_time,
+                        'last_type': notification_type
+                    }, f)
+            except:
+                pass
+
+        except Exception as e:
+            pass # Non-critical
+
     return next_prayer[0], format_time_remaining(time_remaining), prayer_class
 
 def main():
+    # --- Startup Notification Logic ---
+    if not os.path.exists(STARTUP_NOTIFICATION_FLAG_FILE):
+        try:
+            subprocess.run([
+                "notify-send",
+                "-u", "low",  # Low urgency
+                "-a", "PrayerTimesWaybar", # Application name
+                "Prayer Times Module",    # Summary/Title
+                "Initialized. Prayer reminder system is active."], # Body
+                timeout=1, check=False)
+            # Create the flag file to prevent repeated notifications
+            with open(STARTUP_NOTIFICATION_FLAG_FILE, 'w') as f_flag:
+                f_flag.write('notified')
+        except Exception:
+            pass
+
     try:
         prayer_times = fetch_prayer_times()
+        if not prayer_times: # Handle case where fetching fails and no cache
+            output = {
+                "text": " Prayer times unavailable",
+                "tooltip": "Could not fetch prayer times and no cache available.",
+                "class": "custom-prayertimes-error"
+            }
+            print(json.dumps(output))
+            return
+
         next_prayer, time_remaining, prayer_class = time_until_next_prayer(prayer_times)
 
         # Create tooltip with 12-hour format
@@ -114,6 +210,7 @@ def main():
         print(json.dumps(output))
     except Exception as e:
         # Try to use cached data if available
+        error_message = str(e)
         try:
             if os.path.exists(CACHE_FILE):
                 with open(CACHE_FILE, 'r') as f:
@@ -124,21 +221,23 @@ def main():
                     tooltip = "Prayer Times (cached):\n"
                     for prayer, time in prayer_times.items():
                         tooltip += f"{prayer}: {format_time_12hr(time)}\n"
+                    tooltip += f"\n(Error fetching: {error_message})"
 
                     output = {
                         "text": f" {next_prayer} in {time_remaining}",
-                        "tooltip": tooltip + "\n(Using cached data)",
+                        "tooltip": tooltip,
                         "class": f"custom-prayertimes {prayer_class} cached",
                         "alt": "prayertimes-cached"
                     }
                     print(json.dumps(output))
                     return
-        except Exception:
+        except Exception as cache_e:
+            error_message = f"Original error: {error_message}, Cache error: {str(cache_e)}"
             pass
 
         output = {
-            "text": " Prayer times",
-            "tooltip": f"Error: {str(e)}",
+            "text": " Prayer times error",
+            "tooltip": f"Error: {error_message}",
             "class": "custom-prayertimes-error"
         }
         print(json.dumps(output))

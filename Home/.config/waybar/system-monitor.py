@@ -168,7 +168,7 @@ def main():
                 tooltip += f"\n{sensor}: {temp}°C"
 
         # Format text with CPU and RAM only
-        text = f"{cpu_icon} {cpu_usage:.0f}% • {ram_icon} {mem['percent']}%"
+        text = f"{cpu_icon} {cpu_usage:.0f}%  {ram_icon} {mem['percent']}%"
 
         # Output for waybar
         output = {
