@@ -7,6 +7,7 @@
 		"tooltip-format": "{title}",
 		"on-click": "activate",
 		"on-click-middle": "close",
+		"all-outputs": false,
 		"ignore-list": [
 			"Alacritty"
 		],

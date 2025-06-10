@@ -110,7 +110,6 @@ tooltip {
 #mpris,
 #network,
 #custom-notifications,
-#custom-pomodoro,
 #custom-power,
 #privacy,
 #pulseaudio,
@@ -118,6 +117,7 @@ tooltip {
 #custom-system-monitor,
 #taskbar,
 #custom-theme,
+#custom-timer-manager,
 #tray,
 #custom-updates,
 #custom-wallchange,
@@ -177,4 +177,49 @@ tooltip {
     border-radius: 7px 0px 0px 7px;
     margin-left: 9px;
     padding-left: 3px;
+}
+
+/* Timer Manager Styles */
+#custom-timer-manager.timer-idle {
+    color: @main-fg;
+    background: @main-bg;
+}
+
+#custom-timer-manager.timer-active {
+    color: #a6e3a1;
+    background: @main-bg;
+    animation: timer-pulse 2s ease-in-out infinite;
+}
+
+#custom-timer-manager.timer-paused {
+    color: #f9e2af;
+    background: @main-bg;
+}
+
+#custom-timer-manager.timer-alarm-pending {
+    color: #fab387;
+    background: @main-bg;
+}
+
+#custom-timer-manager.stopwatch-active {
+    color: #89b4fa;
+    background: @main-bg;
+    animation: stopwatch-tick 1s ease-in-out infinite;
+}
+
+#custom-timer-manager.stopwatch-paused {
+    color: #cba6f7;
+    background: @main-bg;
+}
+
+@keyframes timer-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+@keyframes stopwatch-tick {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
 }

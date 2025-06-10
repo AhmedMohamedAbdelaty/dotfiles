@@ -90,8 +90,16 @@ def output_no_player():
         'alt': 'No Players',
         'tooltip': 'No media players detected or all have been closed.'
     }
-    sys.stdout.write(json.dumps(output) + '\n')
-    sys.stdout.flush()
+    try:
+        sys.stdout.write(json.dumps(output) + '\n')
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # Handle case where waybar might have closed the pipe
+        logger.info('Output pipe closed, exiting gracefully')
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f'Error writing output: {e}')
+        sys.exit(1)
 
 def write_output(text, player_name_unused, status_unused, tooltip, css_class, alt_text):
     """Writes the JSON output to stdout."""
@@ -102,8 +110,16 @@ def write_output(text, player_name_unused, status_unused, tooltip, css_class, al
         'alt': alt_text,
         'tooltip': tooltip
     }
-    sys.stdout.write(json.dumps(output) + '\n')
-    sys.stdout.flush()
+    try:
+        sys.stdout.write(json.dumps(output) + '\n')
+        sys.stdout.flush()
+    except BrokenPipeError:
+        # Handle case where waybar might have closed the pipe
+        logger.info('Output pipe closed, exiting gracefully')
+        sys.exit(0)
+    except Exception as e:
+        logger.error(f'Error writing output: {e}')
+        sys.exit(1)
 
 def extract_metadata_value(metadata, key, default_value="Unknown"):
     """Safely extract values from metadata dictionary with proper GLib Variant handling."""
@@ -428,10 +444,17 @@ def parse_arguments():
         loop.run()
     except KeyboardInterrupt:
         logger.info("Loop interrupted by user.")
+    except BrokenPipeError:
+        logger.info("Output pipe closed, exiting gracefully")
+    except Exception as e:
+        logger.error(f"Unexpected error in main loop: {e}")
     finally:
         logger.info("Exiting mediaplayer script.")
-        sys.stdout.write('\n')
-        sys.stdout.flush()
+        try:
+            sys.stdout.write('\n')
+            sys.stdout.flush()
+        except:
+            pass  # Ignore any errors during cleanup
 
 if __name__ == '__main__':
     parse_arguments()

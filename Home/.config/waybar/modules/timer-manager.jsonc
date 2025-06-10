@@ -1,0 +1,12 @@
+    "custom/timer-manager": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 1,
+        "exec": "~/.config/waybar/timer-manager.py status",
+        "on-click": "~/.config/waybar/timer-manager.py menu",
+        "on-click-right": "~/.config/waybar/timer-manager.py toggle",
+        "on-click-middle": "~/.config/waybar/timer-manager.py stop",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
+    },

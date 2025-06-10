@@ -2,24 +2,26 @@
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "height": 31,
+    "height": 32,
     "exclusive": true,
     "passthrough": false,
     "gtk-layer-shell": true,
     "reload_style_on_change": true,
+    "output": ["HDMI-A-1", "eDP-1", "!grimblastVD", "!*VD", "!*virtual*"],
 
     "modules-left": [
         "custom/padd", "custom/mpwidget", "custom/l_end",
         "custom/system-monitor", "custom/r_end",
         "custom/l_end", "idle_inhibitor", "clock", "custom/r_end",
-        "custom/l_end", "hyprland/workspaces", "hyprland/window", "custom/r_end", "custom/padd", "custom/prayertimes"
+        "custom/l_end", "hyprland/workspaces", "custom/r_end", "custom/padd", "custom/prayertimes"
     ],
     "modules-center": [
         "custom/padd", "custom/l_end", "wlr/taskbar", "custom/r_end", "custom/padd"
     ],
     "modules-right": [
-        "custom/padd", "custom/l_end", "backlight", "network", "pulseaudio", "pulseaudio#microphone", "custom/updates", "custom/notifications", "custom/keybindhint", "custom/r_end",
-        "custom/l_end", "custom/pomodoro", "privacy", "tray", "battery", "custom/r_end",
+        "custom/padd", "custom/l_end", "custom/timer-manager", "custom/r_end",
+        "custom/l_end", "backlight", "network", "pulseaudio", "pulseaudio#microphone", "custom/updates", "custom/notifications", "custom/keybindhint", "custom/r_end",
+        "custom/l_end", "privacy", "tray", "battery", "custom/r_end",
         "custom/padd", "custom/l_end", "custom/wallchange", "custom/theme", "custom/cliphist", "custom/power", "custom/r_end", "custom/padd"
     ],
 
@@ -47,6 +49,7 @@
     "wlr/taskbar": {
         "format": "{icon}", "rotate": 0, "icon-size": 18, "icon-theme": "Tela-circle-dracula", "spacing": 0,
         "tooltip-format": "{title}", "on-click": "activate", "on-click-middle": "close",
+        "all-outputs": false,
         "ignore-list": [ "Alacritty" ],
         "app_ids-mapping": { "firefoxdeveloperedition": "firefox-developer-edition", "jetbrains-datagrip": "DataGrip" }
     },
@@ -130,27 +133,13 @@
         "exec": "~/.config/waybar/mediaplayer.py",
         "return-type": "json",
         "format": "{text}",
-        "on-click": "~/.config/waybar/player-switcher-script.sh",
+        "on-click": "playerctl play-pause",
+        "on-click-right": "~/.config/waybar/player-switcher-script.sh",
         "on-scroll-up": "playerctl volume 0.05+",
         "on-scroll-down": "playerctl volume 0.05-",
         "tooltip": true,
         "escape": true,
         "max-length": 40,
-        "rotate": 0
-    },
-    "custom/pomodoro": {
-        "format": "{icon} {text}",
-        "format-icons": {
-            "inactive": "󰔛",
-            "active": "󱎫",
-            "break": "󰒲"
-        },
-        "return-type": "json",
-        "exec": "~/.config/waybar/waybar-pomodoro.py",
-        "interval": 1,
-        "on-click": "~/.config/waybar/waybar-pomodoro.py toggle",
-        "on-click-right": "~/.config/waybar/waybar-pomodoro.py end",
-        "on-click-middle": "~/.config/waybar/waybar-pomodoro.py start-break",
         "rotate": 0
     },
     "custom/system-monitor": {
@@ -203,6 +192,19 @@
             "(.*)Steam": "Steam 󰓓"
         },
         "max-length": 50
+    },
+
+    "custom/timer-manager": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 1,
+        "exec": "~/.config/waybar/timer-manager.py status",
+        "on-click": "~/.config/waybar/timer-manager.py menu",
+        "on-click-right": "~/.config/waybar/timer-manager.py toggle",
+        "on-click-middle": "~/.config/waybar/timer-manager.py stop",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
     },
 
     "custom/l_end": { "format": " ", "interval" : "once", "tooltip": false },
