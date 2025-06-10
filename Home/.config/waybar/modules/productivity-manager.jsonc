@@ -1,0 +1,14 @@
+{
+    "custom/productivity-manager": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 30,
+        "exec": "~/.config/waybar/productivity-manager.py status",
+        "on-click": "~/.config/waybar/productivity-manager.py menu",
+        "on-click-right": "~/.config/waybar/productivity-manager.py goals",
+        "on-click-middle": "~/.config/waybar/productivity-manager.py habits",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
+    }
+}

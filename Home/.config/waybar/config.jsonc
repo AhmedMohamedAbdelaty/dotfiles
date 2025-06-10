@@ -19,7 +19,7 @@
         "custom/padd", "custom/l_end", "wlr/taskbar", "custom/r_end", "custom/padd"
     ],
     "modules-right": [
-        "custom/padd", "custom/l_end", "custom/timer-manager", "custom/r_end",
+        "custom/padd", "custom/l_end", "custom/productivity-manager", "custom/timer-manager", "custom/r_end",
         "custom/l_end", "backlight", "network", "pulseaudio", "pulseaudio#microphone", "custom/updates", "custom/notifications", "custom/keybindhint", "custom/r_end",
         "custom/l_end", "privacy", "tray", "battery", "custom/r_end",
         "custom/padd", "custom/l_end", "custom/wallchange", "custom/theme", "custom/cliphist", "custom/power", "custom/r_end", "custom/padd"
@@ -192,6 +192,19 @@
             "(.*)Steam": "Steam 󰓓"
         },
         "max-length": 50
+    },
+
+    "custom/productivity-manager": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 30,
+        "exec": "~/.config/waybar/productivity-manager.py status",
+        "on-click": "~/.config/waybar/productivity-manager.py menu",
+        "on-click-right": "~/.config/waybar/productivity-manager.py focus",
+        "on-click-middle": "~/.config/waybar/productivity-manager.py habits",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
     },
 
     "custom/timer-manager": {

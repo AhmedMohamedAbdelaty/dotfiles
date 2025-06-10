@@ -22,6 +22,8 @@ class TimerManager:
     def __init__(self):
         self.state = self.load_state()
         self.alarm_state = self.load_alarm_state()
+        self.productivity_cache_dir = os.path.join(CACHE_DIR, 'productivity')
+        os.makedirs(self.productivity_cache_dir, exist_ok=True)
 
     def load_state(self):
         """Load timer/stopwatch state from file"""
@@ -31,13 +33,15 @@ class TimerManager:
                     data = json.load(f)
                     # Validate and set defaults for missing keys
                     defaults = {
-                        "mode": "idle",  # idle, timer, stopwatch
+                        "mode": "idle",  # idle, timer, stopwatch, focus, break
                         "start_time": 0,
                         "duration": 0,
                         "paused": False,
                         "pause_start": 0,
                         "total_pause_time": 0,
-                        "timer_name": "Timer"
+                        "timer_name": "Timer",
+                        "timer_type": "general",  # general, focus, break
+                        "session_id": None
                     }
                     for key, default_value in defaults.items():
                         if key not in data:
@@ -53,7 +57,9 @@ class TimerManager:
             "paused": False,
             "pause_start": 0,
             "total_pause_time": 0,
-            "timer_name": "Timer"
+            "timer_name": "Timer",
+            "timer_type": "general",
+            "session_id": None
         }
 
     def load_alarm_state(self):
@@ -127,6 +133,117 @@ class TimerManager:
             except Exception:
                 pass
 
+    def create_session_record(self, duration_minutes, name, session_type):
+        """Create a session record for focus/break tracking"""
+        import uuid
+        session_id = str(uuid.uuid4())[:8]
+
+        session_data = {
+            "id": session_id,
+            "name": name,
+            "type": session_type,  # focus or break
+            "planned_duration": duration_minutes / 60,  # Convert to minutes
+            "start_time": datetime.now().isoformat(),
+            "completed": False,
+            "interrupted": False,
+            "actual_duration": 0
+        }
+
+        # Save to analytics file
+        analytics_file = os.path.join(self.productivity_cache_dir, 'analytics.json')
+        try:
+            if os.path.exists(analytics_file):
+                with open(analytics_file, 'r') as f:
+                    analytics = json.load(f)
+            else:
+                analytics = {"focus_sessions": [], "break_sessions": []}
+
+            if session_type == "focus":
+                analytics.setdefault("focus_sessions", []).append(session_data)
+            else:
+                analytics.setdefault("break_sessions", []).append(session_data)
+
+            with open(analytics_file, 'w') as f:
+                json.dump(analytics, f, indent=2)
+
+        except Exception as e:
+            self.send_notification("Session Error", f"Failed to create session record: {e}", "critical")
+
+        return session_id
+
+    def update_session_record(self, session_id, completed=True, interrupted=False):
+        """Update session record when timer completes or is stopped"""
+        if not session_id:
+            return
+
+        analytics_file = os.path.join(self.productivity_cache_dir, 'analytics.json')
+        try:
+            if not os.path.exists(analytics_file):
+                return
+
+            with open(analytics_file, 'r') as f:
+                analytics = json.load(f)
+
+            # Find and update the session
+            for session_list in [analytics.get("focus_sessions", []), analytics.get("break_sessions", [])]:
+                for session in session_list:
+                    if session.get("id") == session_id:
+                        session["completed"] = completed
+                        session["interrupted"] = interrupted
+                        session["end_time"] = datetime.now().isoformat()
+
+                        # Calculate actual duration
+                        if self.state["timer_type"] in ["focus", "break"]:
+                            elapsed = self.get_current_time()
+                            session["actual_duration"] = round(elapsed / 60, 1)  # Convert to minutes
+
+                        # Award points if focus session completed
+                        if session["type"] == "focus" and completed and not interrupted:
+                            self.award_productivity_points(10)
+
+                        break
+
+            with open(analytics_file, 'w') as f:
+                json.dump(analytics, f, indent=2)
+
+        except Exception as e:
+            self.send_notification("Session Error", f"Failed to update session: {e}", "critical")
+
+    def award_productivity_points(self, points):
+        """Award points to productivity manager"""
+        try:
+            achievements_file = os.path.join(self.productivity_cache_dir, 'achievements.json')
+            daily_stats_file = os.path.join(self.productivity_cache_dir, 'daily_stats.json')
+
+            # Update achievements points
+            if os.path.exists(achievements_file):
+                with open(achievements_file, 'r') as f:
+                    achievements = json.load(f)
+
+                old_points = achievements.get("points", 0)
+                achievements["points"] = old_points + points
+
+                # Calculate level
+                achievements["level"] = (achievements["points"] // 100) + 1
+
+                with open(achievements_file, 'w') as f:
+                    json.dump(achievements, f, indent=2)
+
+            # Update daily stats
+            if os.path.exists(daily_stats_file):
+                with open(daily_stats_file, 'r') as f:
+                    daily_stats = json.load(f)
+
+                if self.state["timer_type"] == "focus":
+                    elapsed_minutes = round(self.get_current_time() / 60)
+                    daily_stats["focus_time"] = daily_stats.get("focus_time", 0) + elapsed_minutes
+
+                with open(daily_stats_file, 'w') as f:
+                    json.dump(daily_stats, f, indent=2)
+
+        except Exception:
+            pass  # Fail silently for productivity integration
+
     def format_time(self, seconds):
         """Format seconds to HH:MM:SS or MM:SS format"""
         seconds = max(0, int(seconds))
@@ -146,8 +263,12 @@ class TimerManager:
             return self.state["pause_start"] - self.state["start_time"] - self.state["total_pause_time"]
         else:
             return current_time - self.state["start_time"] - self.state["total_pause_time"]
-    def start_timer(self, duration_seconds, name="Timer"):
+    def start_timer(self, duration_seconds, name="Timer", timer_type="general"):
         """Start a countdown timer"""
+        session_id = None
+        if timer_type in ["focus", "break"]:
+            session_id = self.create_session_record(duration_seconds, name, timer_type)
+
         self.state.update({
             "mode": "timer",
             "start_time": time.time(),
@@ -155,10 +276,14 @@ class TimerManager:
             "paused": False,
             "pause_start": 0,
             "total_pause_time": 0,
-            "timer_name": name
+            "timer_name": name,
+            "timer_type": timer_type,
+            "session_id": session_id
         })
         self.save_state()
-        self.send_notification("Timer Started", f"{name}: {self.format_time(duration_seconds)}")
+
+        icon = "🧠" if timer_type == "focus" else "☕" if timer_type == "break" else "⏲️"
+        self.send_notification(f"{icon} {name} Started", f"{self.format_time(duration_seconds)}")
 
     def start_stopwatch(self, name="Stopwatch"):
         """Start a stopwatch (count up)"""
@@ -196,10 +321,17 @@ class TimerManager:
 
         self.save_state()
 
-    def stop_timer(self):
+    def stop_timer(self, interrupted=True):
         """Stop current timer or stopwatch"""
         if self.state["mode"] != "idle":
             name = self.state["timer_name"]
+            session_id = self.state.get("session_id")
+            timer_type = self.state.get("timer_type", "general")
+
+            # Update session record if this was a focus/break session
+            if session_id and timer_type in ["focus", "break"]:
+                self.update_session_record(session_id, completed=not interrupted, interrupted=interrupted)
+
             self.state.update({
                 "mode": "idle",
                 "start_time": 0,
@@ -207,10 +339,17 @@ class TimerManager:
                 "paused": False,
                 "pause_start": 0,
                 "total_pause_time": 0,
-                "timer_name": "Timer"
+                "timer_name": "Timer",
+                "timer_type": "general",
+                "session_id": None
             })
             self.save_state()
-            self.send_notification(f"{name} Stopped", "Timer has been stopped")
+
+            if interrupted:
+                self.send_notification(f"{name} Stopped", "Timer has been stopped")
+            else:
+                icon = "🧠" if timer_type == "focus" else "☕" if timer_type == "break" else "⏲️"
+                self.send_notification(f"{icon} {name} Complete!", "Timer finished successfully")
 
     def add_alarm(self, alarm_time, name="Alarm"):
         """Add a new alarm"""
@@ -325,8 +464,10 @@ class TimerManager:
             if elapsed >= self.state["duration"]:
                 # Timer completed
                 self.play_sound("complete")
-                self.send_notification("⏰ Timer Complete!", f"{self.state['timer_name']} finished", "critical")
-                self.stop_timer()
+                timer_type = self.state.get("timer_type", "general")
+                icon = "🧠" if timer_type == "focus" else "☕" if timer_type == "break" else "⏰"
+                self.send_notification(f"{icon} Timer Complete!", f"{self.state['timer_name']} finished", "critical")
+                self.stop_timer(interrupted=False)  # Mark as completed, not interrupted
                 return self.get_idle_status()
 
         if self.state["mode"] == "idle":
@@ -369,40 +510,53 @@ class TimerManager:
         """Get timer countdown status"""
         elapsed = self.get_current_time()
         remaining = max(0, self.state["duration"] - elapsed)
+        timer_type = self.state.get("timer_type", "general")
 
+        # Choose icon based on timer type and state
         if self.state["paused"]:
-            text = f"⏸️ {self.format_time(remaining)}"
+            icon = "⏸️"
             css_class = "timer-paused"
         else:
-            text = f"⏲️ {self.format_time(remaining)}"
-            css_class = "timer-active"
+            if timer_type == "focus":
+                icon = "🧠"
+                css_class = "timer-focus"
+            elif timer_type == "break":
+                icon = "☕"
+                css_class = "timer-break"
+            else:
+                icon = "⏲️"
+                css_class = "timer-active"
 
+        text = f"{icon} {self.format_time(remaining)}"
         progress = min(100, (elapsed / self.state["duration"]) * 100) if self.state["duration"] > 0 else 0
 
-        tooltip = f"Timer: {self.state['timer_name']}\n"
+        tooltip = f"{self.state['timer_name']}\n"
         tooltip += f"Remaining: {self.format_time(remaining)}\n"
         tooltip += f"Progress: {int(progress)}%"
+
+        if timer_type in ["focus", "break"]:
+            tooltip += f"\nType: {timer_type.title()} Session"
 
         return {
             "text": text,
             "tooltip": tooltip,
             "class": css_class
         }
-    
+
     def get_stopwatch_status(self):
         """Get stopwatch status"""
         elapsed = self.get_current_time()
-        
+
         if self.state["paused"]:
             text = f"⏸️ {self.format_time(elapsed)}"
             css_class = "stopwatch-paused"
         else:
             text = f"⏱️ {self.format_time(elapsed)}"
             css_class = "stopwatch-active"
-        
+
         tooltip = f"Stopwatch: {self.state['timer_name']}\n"
         tooltip += f"Elapsed: {self.format_time(elapsed)}"
-        
+
         return {
             "text": text,
             "tooltip": tooltip,
@@ -412,8 +566,10 @@ class TimerManager:
 def show_quick_menu():
     """Show quick timer menu using rofi"""
     options = [
-        "🍅 Pomodoro (25m)",
-        "☕ Coffee break (5m)",
+        "🧠 Focus Session (25m)",
+        "🧠 Deep Focus (50m)",
+        "☕ Short Break (5m)",
+        "☕ Long Break (15m)",
         "🍽️ Lunch break (30m)",
         "⏱️ Custom timer",
         "🏃 Start stopwatch",
@@ -421,21 +577,25 @@ def show_quick_menu():
         "📋 Manage alarms",
         "⏹️ Stop current"
     ]
-    
+
     try:
         result = subprocess.run(['rofi', '-dmenu', '-i', '-p', 'Timer Manager',
                                 '-theme-str', 'window {width: 300px;}'],
                                input='\n'.join(options), text=True,
                                capture_output=True)
-        
+
         if result.returncode == 0:
             selection = result.stdout.strip()
             tm = TimerManager()
-            
-            if "Pomodoro" in selection:
-                tm.start_timer(25 * 60, "Pomodoro")
-            elif "Coffee break" in selection:
-                tm.start_timer(5 * 60, "Coffee Break")
+
+            if "Focus Session (25m)" in selection:
+                tm.start_timer(25 * 60, "Focus Session", "focus")
+            elif "Deep Focus (50m)" in selection:
+                tm.start_timer(50 * 60, "Deep Focus", "focus")
+            elif "Short Break (5m)" in selection:
+                tm.start_timer(5 * 60, "Short Break", "break")
+            elif "Long Break (15m)" in selection:
+                tm.start_timer(15 * 60, "Long Break", "break")
             elif "Lunch break" in selection:
                 tm.start_timer(30 * 60, "Lunch Break")
             elif "Custom timer" in selection:
@@ -448,7 +608,7 @@ def show_quick_menu():
                 show_alarm_manager()
             elif "Stop current" in selection:
                 tm.stop_timer()
-                
+
     except Exception as e:
         tm = TimerManager()
         tm.send_notification("Menu Error", f"Failed to show menu: {e}", "critical")
@@ -461,10 +621,10 @@ def show_custom_timer_dialog():
                                 '--text=Enter duration (e.g., 10m, 1h30m, 90s):',
                                 '--entry-text=10m'],
                                capture_output=True, text=True)
-        
+
         if result.returncode == 0:
             duration_str = result.stdout.strip().lower()
-            
+
             # Parse duration
             total_seconds = 0
             if 'h' in duration_str:
@@ -482,20 +642,20 @@ def show_custom_timer_dialog():
                 total_seconds = int(duration_str.replace('s', ''))
             else:
                 total_seconds = int(duration_str) * 60  # Default to minutes
-            
+
             # Get name
             name_result = subprocess.run(['zenity', '--entry', '--title=Timer Name',
                                          '--text=Enter timer name:',
                                          '--entry-text=Custom Timer'],
                                         capture_output=True, text=True)
-            
+
             name = "Custom Timer"
             if name_result.returncode == 0:
                 name = name_result.stdout.strip() or "Custom Timer"
-            
+
             tm = TimerManager()
             tm.start_timer(total_seconds, name)
-            
+
     except Exception as e:
         tm = TimerManager()
         tm.send_notification("Timer Error", f"Invalid duration format: {e}", "critical")
@@ -507,23 +667,23 @@ def show_alarm_dialog():
                                 '--text=Enter alarm time (HH:MM):',
                                 '--entry-text=' + datetime.now().strftime('%H:%M')],
                                capture_output=True, text=True)
-        
+
         if result.returncode == 0:
             alarm_time = result.stdout.strip()
-            
+
             # Get name
             name_result = subprocess.run(['zenity', '--entry', '--title=Alarm Name',
                                          '--text=Enter alarm name:',
                                          '--entry-text=Wake up'],
                                         capture_output=True, text=True)
-            
+
             name = "Wake up"
             if name_result.returncode == 0:
                 name = name_result.stdout.strip() or "Wake up"
-            
+
             tm = TimerManager()
             tm.add_alarm(alarm_time, name)
-            
+
     except Exception as e:
         tm = TimerManager()
         tm.send_notification("Alarm Error", f"Failed to set alarm: {e}", "critical")
@@ -531,28 +691,28 @@ def show_alarm_dialog():
 def show_alarm_manager():
     """Show alarm management interface"""
     tm = TimerManager()
-    
+
     if not tm.alarm_state["alarms"]:
         tm.send_notification("No Alarms", "No alarms are currently set")
         return
-    
+
     options = []
     for i, alarm in enumerate(tm.alarm_state["alarms"]):
         alarm_time = datetime.fromisoformat(alarm["time"])
         status = "✅" if alarm["enabled"] else "❌"
         options.append(f"{status} {alarm['name']} - {alarm_time.strftime('%H:%M')}")
-    
+
     options.append("➕ Add new alarm")
-    
+
     try:
         result = subprocess.run(['rofi', '-dmenu', '-i', '-p', 'Manage Alarms',
                                 '-theme-str', 'window {width: 400px;}'],
                                input='\n'.join(options), text=True,
                                capture_output=True)
-        
+
         if result.returncode == 0:
             selection = result.stdout.strip()
-            
+
             if "Add new alarm" in selection:
                 show_alarm_dialog()
             else:
@@ -564,11 +724,11 @@ def show_alarm_manager():
                             "🔄 Toggle on/off",
                             "🗑️ Delete alarm"
                         ]
-                        
+
                         action_result = subprocess.run(['rofi', '-dmenu', '-i', '-p', 'Alarm Action'],
                                                      input='\n'.join(alarm_options), text=True,
                                                      capture_output=True)
-                        
+
                         if action_result.returncode == 0:
                             action = action_result.stdout.strip()
                             if "Toggle" in action:
@@ -576,70 +736,59 @@ def show_alarm_manager():
                             elif "Delete" in action:
                                 tm.remove_alarm(i)
                         break
-                        
+
     except Exception as e:
         tm.send_notification("Manager Error", f"Failed to show alarm manager: {e}", "critical")
 
 def main():
     parser = argparse.ArgumentParser(description='Timer Manager for Waybar')
     parser.add_argument('action', nargs='?', default='status',
-                       choices=['status', 'toggle', 'stop', 'menu', 'pause', 'quick-timer'])
-    parser.add_argument('--duration', type=str, help='Timer duration (e.g., 10m, 1h30m)')
+                       choices=['status', 'toggle', 'stop', 'menu', 'pause', 'quick-timer', 'start-focus', 'start-break'])
+    parser.add_argument('--duration', type=int, help='Timer duration in minutes')
     parser.add_argument('--name', type=str, default='Timer', help='Timer name')
     parser.add_argument('--alarm', type=str, help='Set alarm time (HH:MM)')
-    
+
     args = parser.parse_args()
     tm = TimerManager()
-    
+
     if args.action == 'status':
         status = tm.get_status()
         print(json.dumps(status))
-    
+
     elif args.action == 'toggle':
         tm.toggle_pause()
-    
+
     elif args.action == 'stop':
         tm.stop_timer()
-    
+
     elif args.action == 'menu':
         show_quick_menu()
-    
+
     elif args.action == 'pause':
         tm.toggle_pause()
-    
+
+    elif args.action == 'start-focus':
+        duration = args.duration or 25
+        name = args.name if args.name != 'Timer' else 'Focus Session'
+        tm.start_timer(duration * 60, name, "focus")
+
+    elif args.action == 'start-break':
+        duration = args.duration or 5
+        name = args.name if args.name != 'Timer' else 'Break'
+        tm.start_timer(duration * 60, name, "break")
+
     elif args.action == 'quick-timer':
         if args.duration:
-            # Parse duration similar to custom timer
-            duration_str = args.duration.lower()
-            total_seconds = 0
-            
-            try:
-                if 'h' in duration_str:
-                    parts = duration_str.split('h')
-                    total_seconds += int(parts[0]) * 3600
-                    if len(parts) > 1 and parts[1]:
-                        remaining = parts[1].replace('m', '').replace('s', '')
-                        if 'm' in parts[1]:
-                            total_seconds += int(remaining.replace('m', '')) * 60
-                        elif remaining:
-                            total_seconds += int(remaining)
-                elif 'm' in duration_str:
-                    total_seconds = int(duration_str.replace('m', '')) * 60
-                elif 's' in duration_str:
-                    total_seconds = int(duration_str.replace('s', ''))
-                else:
-                    total_seconds = int(duration_str) * 60
-                
-                tm.start_timer(total_seconds, args.name)
-            except ValueError:
-                tm.send_notification("Timer Error", "Invalid duration format", "critical")
+            # Convert minutes to seconds
+            total_seconds = args.duration * 60
+            tm.start_timer(total_seconds, args.name)
 
 if __name__ == "__main__":
     # Handle signals gracefully
     def signal_handler(signum, frame):
         sys.exit(0)
-    
+
     signal.signal(signal.SIGTERM, signal_handler)
     signal.signal(signal.SIGINT, signal_handler)
-    
+
     main()

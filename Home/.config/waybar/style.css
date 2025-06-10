@@ -111,6 +111,7 @@ tooltip {
 #network,
 #custom-notifications,
 #custom-power,
+#custom-productivity-manager,
 #privacy,
 #pulseaudio,
 #custom-spotify,
@@ -179,6 +180,38 @@ tooltip {
     padding-left: 3px;
 }
 
+/* Productivity Manager Styles */
+#custom-productivity-manager.productivity-idle {
+    color: #89b4fa;
+    background: @main-bg;
+}
+
+#custom-productivity-manager.productivity-active {
+    color: #a6e3a1;
+    background: @main-bg;
+    animation: productivity-pulse 2s ease-in-out infinite;
+}
+
+#custom-productivity-manager.productivity-urgent {
+    color: #f38ba8;
+    background: @main-bg;
+    animation: productivity-urgent 1s ease-in-out infinite;
+}
+
+@keyframes productivity-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+@keyframes productivity-urgent {
+    0% { opacity: 1; }
+    25% { opacity: 0.7; }
+    50% { opacity: 1; }
+    75% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
 /* Timer Manager Styles */
 #custom-timer-manager.timer-idle {
     color: @main-fg;
@@ -189,6 +222,18 @@ tooltip {
     color: #a6e3a1;
     background: @main-bg;
     animation: timer-pulse 2s ease-in-out infinite;
+}
+
+#custom-timer-manager.timer-focus {
+    color: #a6e3a1;
+    background: @main-bg;
+    animation: focus-pulse 3s ease-in-out infinite alternate;
+}
+
+#custom-timer-manager.timer-break {
+    color: #f5c2e7;
+    background: @main-bg;
+    animation: break-pulse 2s ease-in-out infinite alternate;
 }
 
 #custom-timer-manager.timer-paused {
@@ -221,5 +266,17 @@ tooltip {
 @keyframes stopwatch-tick {
     0% { opacity: 1; }
     50% { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+@keyframes focus-pulse {
+    0% { opacity: 1; color: #a6e3a1; }
+    50% { opacity: 0.8; color: #74c7ec; }
+    100% { opacity: 1; color: #a6e3a1; }
+}
+
+@keyframes break-pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
     100% { opacity: 1; }
 }
