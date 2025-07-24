@@ -26,9 +26,7 @@
     "buttons-grid",
     "volume",
     "backlight",
-    "mpris",
-    "title",
-    "dnd"
+    "mpris"
   ],
   "widget-config": {
     "title": {
@@ -101,18 +99,6 @@
         {
           "label": "",
           "command": "kooha"
-        },
-        {
-          "label": "",
-          "command": "playerctl play-pause"
-        },
-        {
-          "label": "𜰎",
-          "command": "playerctl previous"
-        },
-        {
-          "label": "𜰏",
-          "command": "playerctl next"
         }
       ]
     }

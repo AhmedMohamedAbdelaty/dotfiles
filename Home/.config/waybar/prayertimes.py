@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/home/ahmed/.pyenv/versions/3.12.10/bin/python
 
 import requests
 import json
@@ -54,8 +54,8 @@ def fetch_prayer_times():
     # Fetch from API with retries
     for attempt in range(3):
         try:
-            url = "http://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5"
-            response = requests.get(url, timeout=10)
+            url = "https://api.aladhan.com/v1/timingsByCity?city=Cairo&country=Egypt&method=5"
+            response = requests.get(url, timeout=15)
             response.raise_for_status()
 
             data = response.json()
