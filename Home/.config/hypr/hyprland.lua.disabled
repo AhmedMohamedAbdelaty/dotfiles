@@ -1,0 +1,155 @@
+var_scrPath = "$HOME/.local/share/bin"
+
+-- ░▒▒▒░░░░░▓▓          ___________
+
+-- ░░▒▒▒░░░░░▓▓        //___________/
+
+-- ░░▒▒▒░░░░░▓▓     _   _ _    _ _____
+
+-- ░░▒▒░░░░░▓▓▓▓▓▓ | | | | |  | |  __/
+
+-- ░▒▒░░░░▓▓   ▓▓ | |_| | |_/ /| |___
+
+-- ░▒▒░░▓▓   ▓▓   \__  |____/ |____/
+
+-- ░▒▓▓   ▓▓  //____/
+
+-- █▀▄▀█ █▀█ █▄░█ █ ▀█▀ █▀█ █▀█
+
+-- █░▀░█ █▄█ █░▀█ █ ░█░ █▄█ █▀▄
+
+-- See https://wiki.hyprland.org/Configuring/Monitors/
+hl.monitor({
+    output = "",
+    mode = "preferred",
+    position = "auto",
+    scale = "auto",
+})
+
+-- █░░ ▄▀█ █░█ █▄░█ █▀▀ █░█
+
+-- █▄▄ █▀█ █▄█ █░▀█ █▄▄ █▀█
+
+-- See https://wiki.hyprland.org/Configuring/Keywords/
+hl.on("hyprland.start", function()
+    hl.exec_cmd(var_scrPath .. "/resetxdgportal.sh")
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd("dbus-update-activation-environment --systemd --all")
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
+    hl.exec_cmd(var_scrPath .. "/polkitkdeauth.sh")
+    hl.exec_cmd("waybar")
+    hl.exec_cmd("blueman-applet")
+    hl.exec_cmd("udiskie --no-automount --smart-tray")
+    hl.exec_cmd("nm-applet --indicator")
+    hl.exec_cmd("swaync")
+    hl.exec_cmd("wl-paste --type text --watch cliphist store")
+    hl.exec_cmd("wl-paste --type image --watch cliphist store")
+    hl.exec_cmd(var_scrPath .. "/swwwallpaper.sh")
+    hl.exec_cmd(var_scrPath .. "/batterynotify.sh")
+end)
+
+-- █▀▀ █▄░█ █░█
+
+-- ██▄ █░▀█ ▀▄▀
+
+-- See https://wiki.hyprland.org/Configuring/Environment-variables/
+hl.env("PATH", "$PATH:" .. var_scrPath)
+hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
+hl.env("XDG_SESSION_TYPE", "wayland")
+hl.env("XDG_SESSION_DESKTOP", "Hyprland")
+hl.env("QT_QPA_PLATFORM", "wayland;xcb")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
+hl.env("QT_WAYLAND_DISABLE_WINDOWDECORATION", "1")
+hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+hl.env("MOZ_ENABLE_WAYLAND", "1")
+hl.env("GDK_SCALE", "1")
+hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
+
+-- █ █▄░█ █▀█ █░█ ▀█▀
+
+-- █ █░▀█ █▀▀ █▄█ ░█░
+
+-- See https://wiki.hyprland.org/Configuring/Variables/
+hl.config({
+    input = {
+        kb_layout = "us",
+        follow_mouse = 1,
+        touchpad = {
+            natural_scroll = false,
+        },
+        sensitivity = 0,
+        force_no_accel = 1,
+        numlock_by_default = true,
+    },
+})
+
+-- See https://wiki.hyprland.org/Configuring/Keywords/#executing
+hl.device({
+    name = "epic mouse V1",
+    sensitivity = -0.5,
+})
+
+-- See https://wiki.hyprland.org/Configuring/Variables/
+
+-- NOTE: gestures seems to have been removed or changed in Hyprland 0.51.0
+
+-- Commenting out to fix config errors
+
+-- gestures {
+
+-- workspace_swipe = true
+
+-- workspace_swipe_fingers = 3
+
+-- }
+
+-- █░░ ▄▀█ █▄█ █▀█ █░█ ▀█▀ █▀
+
+-- █▄▄ █▀█ ░█░ █▄█ █▄█ ░█░ ▄█
+
+-- See https://wiki.hyprland.org/Configuring/Dwindle-Layout/
+hl.config({
+    dwindle = {
+        force_split = 0,
+        preserve_split = true,
+    },
+})
+
+-- See https://wiki.hyprland.org/Configuring/Master-Layout/
+hl.config({
+    master = {
+        new_status = "master",
+    },
+})
+
+-- █▀▄▀█ █ █▀ █▀▀
+
+-- █░▀░█ █ ▄█ █▄▄
+
+-- See https://wiki.hyprland.org/Configuring/Variables/
+hl.config({
+    misc = {
+        vrr = 0,
+        disable_hyprland_logo = true,
+        disable_splash_rendering = true,
+        force_default_wallpaper = 0,
+    },
+    xwayland = {
+        force_zero_scaling = true,
+        enabled = true,
+    },
+})
+
+-- █▀ █▀█ █░█ █▀█ █▀▀ █▀▀
+
+-- ▄█ █▄█ █▄█ █▀▄ █▄▄ ██▄
+require("animations")
+require("keybindings")
+require("windowrules")
+-- noerror has no Lua equivalent (was: # hyprlang noerror true)
+-- noerror has no Lua equivalent (was: # hyprlang noerror false)
+
+-- Note: as userprefs.conf is sourced at the end, settings configured in this file will override the defaults
+
+-- HyprMod managed settings
+require("hyprland-gui")

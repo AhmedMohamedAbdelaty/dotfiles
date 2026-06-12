@@ -1,0 +1,1 @@
+. "/home/ahmed/.deno/env"

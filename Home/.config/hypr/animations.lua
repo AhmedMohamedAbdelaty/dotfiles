@@ -1,0 +1,14 @@
+-- ▄▀█ █▄░█ █ █▀▄▀█ ▄▀█ ▀█▀ █ █▀█ █▄░█
+
+-- █▀█ █░▀█ █ █░▀░█ █▀█ ░█░ █ █▄█ █░▀█
+
+--
+
+-- See https://wiki.hyprland.org/Configuring/Animations/
+
+-- this file can be edited manually or use animation selector to select animations
+
+-- disable animations while in hyprpicker and selection screenshot
+
+-- (Removed invalid layerrule lines that caused config errors)
+require("animations.animations-default")
