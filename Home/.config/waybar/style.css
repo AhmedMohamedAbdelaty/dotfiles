@@ -236,6 +236,13 @@ tooltip {
     background: @main-bg;
 }
 
+#custom-session-restore,
+#custom-dotfiles-sync {
+    min-width: 28px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 /* Timer Manager Styles */
 #custom-timer-manager.timer-idle {
     color: @main-fg;

@@ -217,12 +217,12 @@ status_text() {
 waybar_status() {
     ensure_config
     if [ ! -f "${STATE_FILE}" ] || ! jq empty "${STATE_FILE}" >/dev/null 2>&1; then
-        jq -n '{text:"Session", tooltip:"No saved session. Left click to open session restore.", class:"session-empty"}'
+        jq -n '{text:"󰒲 Session", tooltip:"No saved session. Left click to open session restore.", class:"session-empty"}'
         return
     fi
 
     jq -n --slurpfile state "${STATE_FILE}" '{
-      text: ("Session " + (($state[0].apps | length) | tostring)),
+      text: ("󰒲 " + (($state[0].apps | length) | tostring)),
       tooltip: ("Saved: " + ($state[0].saved_at // "unknown") + "\n" + ($state[0].apps | map(.name + " -> workspace " + (.workspace|tostring)) | join("\n"))),
       class: "session-saved"
     }'
