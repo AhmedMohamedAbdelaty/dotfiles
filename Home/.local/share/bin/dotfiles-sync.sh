@@ -8,6 +8,7 @@ CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/hyde"
 CONFIG_FILE="${CONFIG_DIR}/dotfiles-sync.json"
 LOG_DIR="${CACHE_DIR}/dotfiles-sync"
 LOCK_FILE="/tmp/hyde-dotfiles-sync-$(id -u).lock"
+SELF="${BASH_SOURCE[0]}"
 
 mkdir -p "${CONFIG_DIR}" "${LOG_DIR}"
 
@@ -409,20 +410,20 @@ sync_gui() {
                 ;;
             20)
                 local log_file
-                log_file="$(sync_files dry-run | tail -1)"
+                log_file="$(bash "${SELF}" sync --dry-run | tail -1)"
                 show_log_gui "${log_file}"
                 ;;
             30)
                 confirm_gui "Apply Sync" "Copy managed dotfiles into the repo now?" "Apply" || continue
                 local log_file
-                log_file="$(sync_files apply | tail -1)"
+                log_file="$(bash "${SELF}" sync --apply | tail -1)"
                 show_log_gui "${log_file}"
                 ;;
             40)
                 local message tmp
                 message="$(prompt_commit_message)" || continue
                 tmp="$(mktemp)"
-                commit_changes "${message}" > "${tmp}" 2>&1
+                bash "${SELF}" commit "${message}" > "${tmp}" 2>&1
                 show_log_gui "${tmp}"
                 rm -f "${tmp}"
                 ;;
@@ -430,25 +431,25 @@ sync_gui() {
                 confirm_gui "Push Dotfiles" "Push the current dotfiles branch to origin?" "Push" || continue
                 local tmp
                 tmp="$(mktemp)"
-                push_changes true > "${tmp}" 2>&1
+                bash "${SELF}" push --yes > "${tmp}" 2>&1
                 show_log_gui "${tmp}"
                 rm -f "${tmp}"
                 ;;
             60)
                 local log_file message tmp
-                log_file="$(sync_files dry-run | tail -1)"
+                log_file="$(bash "${SELF}" sync --dry-run | tail -1)"
                 show_log_gui "${log_file}"
                 confirm_gui "Apply Sync" "Apply the dry-run changes now?" "Apply" || continue
-                log_file="$(sync_files apply | tail -1)"
+                log_file="$(bash "${SELF}" sync --apply | tail -1)"
                 show_log_gui "${log_file}"
                 message="$(prompt_commit_message)" || continue
                 tmp="$(mktemp)"
-                commit_changes "${message}" > "${tmp}" 2>&1
+                bash "${SELF}" commit "${message}" > "${tmp}" 2>&1
                 show_log_gui "${tmp}"
                 rm -f "${tmp}"
                 confirm_gui "Push Dotfiles" "Push the committed branch to origin?" "Push" || continue
                 tmp="$(mktemp)"
-                push_changes true > "${tmp}" 2>&1
+                bash "${SELF}" push --yes > "${tmp}" 2>&1
                 show_log_gui "${tmp}"
                 rm -f "${tmp}"
                 ;;
@@ -478,15 +479,15 @@ main() {
     local command="${1:-gui}"
     shift || true
 
-    exec 9>"${LOCK_FILE}"
-    flock -n 9 || {
-        if [ "${command}" = "waybar" ]; then
-            waybar_busy
-            exit 0
-        fi
-        echo "Another dotfiles sync action is already running."
-        exit 1
-    }
+    case "${command}" in
+        sync|commit|push)
+            exec 9>"${LOCK_FILE}"
+            flock -n 9 || {
+                echo "Another dotfiles sync action is already running."
+                exit 1
+            }
+            ;;
+    esac
 
     case "${command}" in
         status) status_text ;;
