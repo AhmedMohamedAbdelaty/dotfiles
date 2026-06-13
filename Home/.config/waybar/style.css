@@ -238,9 +238,9 @@ tooltip {
 
 #custom-session-restore,
 #custom-dotfiles-sync {
-    min-width: 28px;
-    padding-left: 6px;
-    padding-right: 6px;
+    min-width: 16px;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
 /* Timer Manager Styles */

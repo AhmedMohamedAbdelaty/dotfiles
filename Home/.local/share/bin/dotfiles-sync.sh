@@ -322,12 +322,12 @@ waybar_status() {
     last_log="$(ls -t "${LOG_DIR}"/dotfiles-sync-*.log 2>/dev/null | head -1)"
     tooltip="Repo: ${repo}\nBranch: ${branch}\nLeft click: open sync GUI\nRight click: preview sync"
     [ -n "${last_log}" ] && tooltip="${tooltip}\nLast log: ${last_log}"
-    jq -n --arg text "󰓦 Sync" --arg tooltip "${tooltip}" '{text:$text, tooltip:$tooltip, class:"dotfiles-sync"}'
+    jq -cn --arg text "🔄 Sync" --arg tooltip "${tooltip}" '{text:$text, tooltip:$tooltip, class:"dotfiles-sync"}'
 }
 
 waybar_busy() {
     local tooltip="Dotfiles sync is already running.\nLeft click: open sync GUI"
-    jq -n --arg text "󰓦 Busy" --arg tooltip "${tooltip}" '{text:$text, tooltip:$tooltip, class:"dotfiles-sync-busy"}'
+    jq -cn --arg text "🔄 Busy" --arg tooltip "${tooltip}" '{text:$text, tooltip:$tooltip, class:"dotfiles-sync-busy"}'
 }
 
 show_log_gui() {
