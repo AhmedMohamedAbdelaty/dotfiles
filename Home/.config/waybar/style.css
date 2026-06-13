@@ -112,6 +112,8 @@ tooltip {
 #custom-notifications,
 #custom-power,
 #custom-productivity-manager,
+#custom-session-restore,
+#custom-dotfiles-sync,
 #privacy,
 #pulseaudio,
 #custom-spotify,
@@ -210,6 +212,28 @@ tooltip {
     50% { opacity: 1; }
     75% { opacity: 0.7; }
     100% { opacity: 1; }
+}
+
+/* Session Restore and Safe Sync Styles */
+#custom-session-restore.session-saved {
+    color: #a6e3a1;
+    background: @main-bg;
+}
+
+#custom-session-restore.session-empty {
+    color: #f9e2af;
+    background: @main-bg;
+}
+
+#custom-session-restore.session-error,
+#custom-dotfiles-sync.dotfiles-sync-busy {
+    color: #f38ba8;
+    background: @main-bg;
+}
+
+#custom-dotfiles-sync.dotfiles-sync {
+    color: #89dceb;
+    background: @main-bg;
 }
 
 /* Timer Manager Styles */

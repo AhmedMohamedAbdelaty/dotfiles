@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "restore_on_startup": true,
+  "startup_delay": 3,
+  "notify": true,
+  "apps": [
+    { "name": "Brave", "class": "brave-browser", "command": "brave", "enabled": true },
+    { "name": "VS Code", "class": "code", "command": "code", "enabled": true },
+    { "name": "Telegram", "class": "org.telegram.desktop", "command": "Telegram -autostart", "enabled": true },
+    { "name": "Legcord", "class": "legcord", "command": "legcord", "enabled": true },
+    { "name": "Vesktop", "class": "dev.vencord.Vesktop", "command": "flatpak run dev.vencord.Vesktop", "enabled": true },
+    { "name": "Kitty", "class": "kitty", "command": "kitty", "enabled": true },
+    { "name": "Dolphin", "class": "org.kde.dolphin", "command": "dolphin", "enabled": true },
+    { "name": "Obsidian", "class": "obsidian", "command": "obsidian", "enabled": true },
+    { "name": "Spotify", "class": "spotify", "command": "spotify", "enabled": false },
+    { "name": "Steam", "class": "Steam", "command": "steam", "enabled": false },
+    { "name": "CopyQ", "class": "com.github.hluk.copyq", "command": "copyq", "enabled": false }
+  ]
+}

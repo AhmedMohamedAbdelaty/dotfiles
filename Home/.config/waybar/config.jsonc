@@ -19,7 +19,7 @@
         "custom/padd", "custom/l_end", "wlr/taskbar", "custom/r_end", "custom/padd"
     ],
     "modules-right": [
-        "custom/padd", "custom/l_end", "custom/productivity-manager", "custom/timer-manager", "custom/r_end",
+        "custom/padd", "custom/l_end", "custom/productivity-manager", "custom/session-restore", "custom/dotfiles-sync", "custom/timer-manager", "custom/r_end",
         "custom/l_end", "backlight", "network", "pulseaudio", "pulseaudio#microphone", "custom/updates", "custom/notifications", "custom/keybindhint", "custom/r_end",
         "custom/l_end", "privacy", "tray", "battery", "custom/r_end",
         "custom/padd", "custom/l_end", "custom/wallchange", "custom/theme", "custom/cliphist", "custom/power", "custom/r_end", "custom/padd"
@@ -202,6 +202,33 @@
         "on-click": "~/.config/waybar/productivity-manager.py menu",
         "on-click-right": "~/.config/waybar/productivity-manager.py focus",
         "on-click-middle": "~/.config/waybar/productivity-manager.py habits",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
+    },
+
+    "custom/session-restore": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 30,
+        "signal": 22,
+        "exec": "~/.local/share/bin/hypr-session.sh waybar",
+        "on-click": "~/.local/share/bin/hypr-session.sh gui",
+        "on-click-right": "~/.local/share/bin/hypr-session.sh save && pkill -RTMIN+22 waybar",
+        "on-click-middle": "~/.local/share/bin/hypr-session.sh restore && pkill -RTMIN+22 waybar",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
+    },
+
+    "custom/dotfiles-sync": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": 300,
+        "signal": 23,
+        "exec": "~/.local/share/bin/dotfiles-sync.sh waybar",
+        "on-click": "~/.local/share/bin/dotfiles-sync.sh gui",
+        "on-click-right": "~/.local/share/bin/dotfiles-sync.sh sync --dry-run && pkill -RTMIN+23 waybar",
         "tooltip": true,
         "rotate": 0,
         "escape": true
