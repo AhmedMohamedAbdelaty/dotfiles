@@ -1,0 +1,192 @@
+@import "../theme.css";
+@import "../colors.css";
+@import "tokens.css";
+
+* {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: "JetBrainsMono Nerd Font", "RobotoMono Nerd Font", "Noto Color Emoji", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    min-height: 0;
+}
+
+window#waybar.material {
+    background: @material-bg;
+    color: @material-on-surface;
+}
+
+tooltip {
+    background: @material-surface-high;
+    color: @material-on-surface;
+    border: 1px solid @material-outline;
+    border-radius: 10px;
+}
+
+tooltip label {
+    color: @material-on-surface;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+    margin: 3px 6px;
+}
+
+#custom-mpwidget,
+#custom-material-system,
+#clock,
+#custom-prayertimes,
+#workspaces,
+#taskbar,
+#custom-material-quick,
+#custom-material-tools,
+#custom-timer-manager,
+#custom-notifications,
+#tray,
+#battery,
+#custom-power {
+    background: @material-chip;
+    color: @material-on-surface;
+    border: 1px solid @material-outline;
+    border-radius: 12px;
+    margin: 0 3px;
+    padding: 0 9px;
+    min-height: 25px;
+}
+
+#custom-mpwidget:hover,
+#custom-material-system:hover,
+#clock:hover,
+#custom-prayertimes:hover,
+#custom-material-quick:hover,
+#custom-material-tools:hover,
+#custom-timer-manager:hover,
+#custom-notifications:hover,
+#battery:hover,
+#custom-power:hover {
+    background: @material-surface-hover;
+}
+
+#workspaces {
+    padding: 0 4px;
+}
+
+#workspaces button {
+    color: @material-on-muted;
+    background: transparent;
+    border-radius: 10px;
+    margin: 3px 1px;
+    padding: 0 8px;
+    min-width: 16px;
+    transition: background 180ms ease, color 180ms ease;
+}
+
+#workspaces button.active {
+    color: @material-surface;
+    background: @material-primary;
+    padding: 0 12px;
+}
+
+#workspaces button:hover {
+    color: @material-on-surface;
+    background: @material-surface-hover;
+}
+
+#taskbar {
+    padding: 0 4px;
+}
+
+#taskbar button {
+    background: transparent;
+    border-radius: 9px;
+    margin: 3px 1px;
+    padding: 0 5px;
+}
+
+#taskbar button.active {
+    background: @material-chip-active;
+}
+
+#custom-material-system.system-normal,
+#custom-material-quick.quick-normal,
+#custom-material-tools.tools-ready,
+#custom-timer-manager.timer-idle {
+    color: @material-on-surface;
+}
+
+#custom-material-system.system-warning,
+#custom-material-tools.tools-warning,
+#custom-timer-manager.timer-paused,
+#custom-timer-manager.timer-alarm-pending,
+#battery.warning {
+    color: @material-warning;
+    background: @material-chip-warning;
+}
+
+#custom-material-system.system-critical,
+#custom-material-quick.quick-critical,
+#custom-material-tools.tools-error,
+#battery.critical {
+    color: @material-error;
+    background: @material-chip-error;
+}
+
+#custom-material-system.system-good,
+#custom-material-tools.tools-good,
+#custom-timer-manager.timer-active,
+#battery.charging {
+    color: @material-success;
+}
+
+#custom-material-quick.quick-muted,
+#pulseaudio.muted {
+    color: @material-warning;
+}
+
+#custom-notifications.notification,
+#custom-notifications.chat-notification,
+#custom-notifications.email-notification {
+    color: @material-primary;
+}
+
+#custom-power {
+    color: @material-error;
+    padding: 0 10px;
+}
+
+#tray {
+    padding: 0 7px;
+}
+
+#tray menu {
+    background: @material-surface-high;
+    color: @material-on-surface;
+    border-radius: 10px;
+}
+
+#custom-mpwidget {
+    color: @material-primary;
+    min-width: 56px;
+}
+
+#custom-material-system {
+    min-width: 76px;
+}
+
+#custom-material-quick {
+    min-width: 72px;
+}
+
+#custom-material-tools {
+    min-width: 68px;
+}
+
+#clock {
+    color: @material-info;
+}
+
+#custom-prayertimes {
+    color: @material-secondary;
+}

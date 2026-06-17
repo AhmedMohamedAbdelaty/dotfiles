@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -u
+set -o pipefail
+
+MAT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/material"
+HUB="${MAT_DIR}/waybar-hub.py"
+
+if [ ! -f "${HUB}" ]; then
+    echo "Material Waybar hub not found: ${HUB}" >&2
+    exit 1
+fi
+
+case "${1:-help}" in
+    status)
+        python3 "${HUB}" status "${2:-tools}"
+        ;;
+    panel)
+        python3 "${HUB}" panel "${2:-quick}"
+        ;;
+    settings)
+        python3 "${HUB}" settings
+        ;;
+    refresh)
+        python3 "${HUB}" refresh
+        pkill -RTMIN+24 waybar 2>/dev/null || true
+        pkill -RTMIN+25 waybar 2>/dev/null || true
+        pkill -RTMIN+26 waybar 2>/dev/null || true
+        ;;
+    preview)
+        log="/tmp/waybar-material-preview.log"
+        pid_file="/tmp/waybar-material-preview.pid"
+        waybar -c "${MAT_DIR}/config.jsonc" -s "${MAT_DIR}/style.css" >"${log}" 2>&1 &
+        pid=$!
+        printf '%s\n' "${pid}" > "${pid_file}"
+        echo "Material Waybar preview started: pid=${pid}"
+        echo "Log: ${log}"
+        ;;
+    stop-preview)
+        pid_file="/tmp/waybar-material-preview.pid"
+        if [ -f "${pid_file}" ]; then
+            pid="$(cat "${pid_file}")"
+            kill "${pid}" 2>/dev/null || true
+            rm -f "${pid_file}"
+            echo "Stopped Material Waybar preview: pid=${pid}"
+        else
+            echo "No Material Waybar preview pid file found."
+        fi
+        ;;
+    start)
+        waybar -c "${MAT_DIR}/config.jsonc" -s "${MAT_DIR}/style.css"
+        ;;
+    *)
+        cat <<EOF
+Usage: waybar-materialctl <command>
+
+Commands:
+  status [module]     Print compact JSON for a module
+  panel [name]        Open a Material panel
+  settings            Open settings view
+  refresh             Refresh cache and signal Waybar modules
+  preview             Start a temporary Material Waybar preview
+  stop-preview        Stop the temporary Material Waybar preview
+  start               Start Waybar with the Material config
+EOF
+        ;;
+esac

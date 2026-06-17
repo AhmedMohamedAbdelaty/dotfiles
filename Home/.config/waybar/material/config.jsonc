@@ -1,0 +1,34 @@
+{
+    "layer": "top",
+    "position": "top",
+    "name": "material",
+    "height": 36,
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "spacing": 0,
+    "output": ["HDMI-A-1", "eDP-1", "!grimblastVD", "!*VD", "!*virtual*"],
+    "include": [
+        "~/.config/waybar/material/modules/material.jsonc"
+    ],
+
+    "modules-left": [
+        "custom/material-system",
+        "clock",
+        "custom/prayertimes"
+    ],
+    "modules-center": [
+        "hyprland/workspaces",
+        "wlr/taskbar"
+    ],
+    "modules-right": [
+        "custom/material-quick",
+        "custom/material-tools",
+        "custom/timer-manager",
+        "custom/notifications",
+        "tray",
+        "battery",
+        "custom/power"
+    ]
+}

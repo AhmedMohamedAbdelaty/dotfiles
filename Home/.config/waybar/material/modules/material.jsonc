@@ -1,0 +1,166 @@
+{
+    "custom/mpwidget": {
+        "exec": "~/.config/waybar/mediaplayer.py",
+        "return-type": "json",
+        "format": "{text}",
+        "on-click": "playerctl play-pause",
+        "on-click-right": "~/.config/waybar/player-switcher-script.sh",
+        "on-scroll-up": "playerctl volume 0.05+",
+        "on-scroll-down": "playerctl volume 0.05-",
+        "tooltip": true,
+        "escape": true,
+        "max-length": 32,
+        "rotate": 0
+    },
+    "custom/material-system": {
+        "exec": "python3 ~/.config/waybar/material/waybar-hub.py status system",
+        "return-type": "json",
+        "format": "{text}",
+        "interval": 5,
+        "signal": 24,
+        "on-click": "python3 ~/.config/waybar/material/waybar-hub.py panel system",
+        "on-click-right": "kitty --start-as=fullscreen --title btop btop",
+        "tooltip": true,
+        "escape": true
+    },
+    "clock": {
+        "format": "{:%I:%M %p  ·  %a %d %b}",
+        "format-alt": "{:%I:%M %p  ·  %A %d %B %Y}",
+        "tooltip-format": "<span>{calendar}</span>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "on-scroll": 1,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<span color='#cdd6f4'><b>{}</b></span>",
+                "weekdays": "<span color='#89dceb'><b>{}</b></span>",
+                "today": "<span color='#f9e2af'><b>{}</b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    },
+    "custom/prayertimes": {
+        "exec": "~/.config/waybar/prayertimes.py",
+        "return-type": "json",
+        "format": "{text}",
+        "interval": 60,
+        "tooltip": true,
+        "rotate": 0
+    },
+    "hyprland/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "active-only": false,
+        "on-click": "activate",
+        "on-scroll-up": "hyprctl dispatch workspace -1",
+        "on-scroll-down": "hyprctl dispatch workspace +1",
+        "persistent-workspaces": {}
+    },
+    "wlr/taskbar": {
+        "format": "{icon}",
+        "icon-size": 18,
+        "icon-theme": "Tela-circle-dracula",
+        "spacing": 2,
+        "tooltip-format": "{title}",
+        "on-click": "activate",
+        "on-click-middle": "close",
+        "all-outputs": false,
+        "ignore-list": ["Alacritty"],
+        "app_ids-mapping": {
+            "firefoxdeveloperedition": "firefox-developer-edition",
+            "jetbrains-datagrip": "DataGrip"
+        }
+    },
+    "custom/material-quick": {
+        "exec": "python3 ~/.config/waybar/material/waybar-hub.py status quick",
+        "return-type": "json",
+        "format": "{text}",
+        "interval": 5,
+        "signal": 25,
+        "on-click": "python3 ~/.config/waybar/material/waybar-hub.py panel quick",
+        "on-click-right": "python3 ~/.config/waybar/material/waybar-hub.py settings",
+        "on-click-middle": "swaync-client -d -sw && pkill -RTMIN+25 waybar",
+        "on-scroll-up": "volumecontrol.sh -o i",
+        "on-scroll-down": "volumecontrol.sh -o d",
+        "tooltip": true,
+        "escape": true
+    },
+    "custom/material-tools": {
+        "exec": "python3 ~/.config/waybar/material/waybar-hub.py status tools",
+        "return-type": "json",
+        "format": "{text}",
+        "interval": 30,
+        "signal": 26,
+        "on-click": "python3 ~/.config/waybar/material/waybar-hub.py panel tools",
+        "on-click-right": "bash ~/.local/share/bin/dotfiles-sync.sh gui",
+        "on-click-middle": "bash ~/.local/share/bin/hypr-session.sh save && pkill -RTMIN+26 waybar",
+        "tooltip": true,
+        "escape": true
+    },
+    "custom/timer-manager": {
+        "format": "{text}",
+        "return-type": "json",
+        "interval": 1,
+        "exec": "~/.config/waybar/timer-manager.py status",
+        "on-click": "~/.config/waybar/timer-manager.py menu",
+        "on-click-right": "~/.config/waybar/timer-manager.py toggle",
+        "on-click-middle": "~/.config/waybar/timer-manager.py stop",
+        "tooltip": true,
+        "rotate": 0,
+        "escape": true
+    },
+    "custom/notifications": {
+        "format": "{icon} {text}",
+        "format-icons": {
+            "email-notification": "󰇮",
+            "chat-notification": "󱋊",
+            "warning-notification": "󰀪",
+            "error-notification": "󰅚",
+            "network-notification": "󱂇",
+            "battery-notification": "󰁺",
+            "update-notification": "󰚰",
+            "music-notification": "󰝚",
+            "volume-notification": "󰕿",
+            "notification": "󰂚",
+            "dnd": "󰂛",
+            "none": "󰂜"
+        },
+        "return-type": "json",
+        "exec-if": "which swaync-client",
+        "exec": "~/.config/waybar/swaync-waybar.py",
+        "on-click": "swaync-client -t -sw",
+        "on-click-middle": "swaync-client -C",
+        "on-click-right": "swaync-client -d -sw",
+        "escape": true,
+        "tooltip": true,
+        "interval": 1
+    },
+    "tray": {
+        "icon-size": 17,
+        "spacing": 5
+    },
+    "battery": {
+        "states": {
+            "good": 95,
+            "warning": 30,
+            "critical": 20
+        },
+        "format": "{icon} {capacity}%",
+        "format-charging": " {capacity}%",
+        "format-plugged": " {capacity}%",
+        "format-alt": "{time} {icon}",
+        "format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    },
+    "custom/power": {
+        "format": "",
+        "on-click": "logoutlaunch.sh 2",
+        "on-click-right": "logoutlaunch.sh 1",
+        "tooltip": true,
+        "tooltip-format": "Power menu"
+    }
+}

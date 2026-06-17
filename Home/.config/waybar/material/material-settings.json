@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "density": "balanced",
+  "icon_mode": "emoji",
+  "theme_mode": "wallbash",
+  "modules": {
+    "media": true,
+    "system": true,
+    "clock": true,
+    "prayer": true,
+    "workspaces": true,
+    "taskbar": true,
+    "quick": true,
+    "tools": true,
+    "timer": true,
+    "notifications": true,
+    "tray": true,
+    "battery": true,
+    "power": true
+  },
+  "intervals": {
+    "system": 5,
+    "quick": 5,
+    "tools": 30
+  },
+  "panels": {
+    "backend": "yad",
+    "confirm_power_actions": true
+  }
+}
