@@ -4,7 +4,7 @@
   "icon_mode": "emoji",
   "theme_mode": "wallbash",
   "modules": {
-    "media": true,
+    "media": false,
     "system": true,
     "clock": true,
     "prayer": true,

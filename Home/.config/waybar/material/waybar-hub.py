@@ -18,6 +18,67 @@ CACHE_HOME = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
 CACHE_DIR = CACHE_HOME / "waybar"
 CACHE_FILE = CACHE_DIR / "material-hub.json"
 
+DEFAULT_SETTINGS = {
+    "version": 1,
+    "density": "balanced",
+    "icon_mode": "emoji",
+    "theme_mode": "wallbash",
+    "modules": {
+        "media": False,
+        "system": True,
+        "clock": True,
+        "prayer": True,
+        "workspaces": True,
+        "taskbar": True,
+        "quick": True,
+        "tools": True,
+        "timer": True,
+        "notifications": True,
+        "tray": True,
+        "battery": True,
+        "power": True,
+    },
+    "intervals": {
+        "system": 5,
+        "quick": 5,
+        "tools": 30,
+    },
+    "panels": {
+        "backend": "yad",
+        "confirm_power_actions": True,
+    },
+}
+
+ICONS = {
+    "emoji": {
+        "cpu": "🧠",
+        "memory": "💿",
+        "volume": "🔊",
+        "brightness": "☀",
+        "tools": "🧰",
+        "warning": "⚠",
+        "settings": "⚙",
+    },
+    "nerd": {
+        "cpu": "󰍛",
+        "memory": "󰘚",
+        "volume": "",
+        "brightness": "󰃠",
+        "tools": "󱂬",
+        "warning": "󰀪",
+        "settings": "",
+    },
+    "plain": {
+        "cpu": "CPU",
+        "memory": "RAM",
+        "volume": "VOL",
+        "brightness": "BRI",
+        "tools": "TOOLS",
+        "warning": "!",
+        "settings": "SET",
+    },
+}
+
 
 def json_line(payload):
     print(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
@@ -47,11 +108,42 @@ def settings():
     data = read_json(SETTINGS_FILE, {})
     if not isinstance(data, dict):
         data = {}
-    data.setdefault("intervals", {})
-    data["intervals"].setdefault("system", 5)
-    data["intervals"].setdefault("quick", 5)
-    data["intervals"].setdefault("tools", 30)
+    data = merge_settings(DEFAULT_SETTINGS, data)
+    data["density"] = data["density"] if data["density"] in {"compact", "balanced", "large"} else "balanced"
+    data["icon_mode"] = data["icon_mode"] if data["icon_mode"] in ICONS else "emoji"
+    for key, fallback in DEFAULT_SETTINGS["intervals"].items():
+        try:
+            data["intervals"][key] = max(1, int(data["intervals"].get(key, fallback)))
+        except Exception:
+            data["intervals"][key] = fallback
     return data
+
+
+def merge_settings(defaults, current):
+    merged = {}
+    for key, value in defaults.items():
+        if isinstance(value, dict):
+            merged[key] = merge_settings(value, current.get(key, {}) if isinstance(current.get(key), dict) else {})
+        else:
+            merged[key] = current.get(key, value)
+    for key, value in current.items():
+        if key not in merged:
+            merged[key] = value
+    return merged
+
+
+def save_settings(data):
+    normalized = merge_settings(DEFAULT_SETTINGS, data)
+    return write_json_atomic(SETTINGS_FILE, normalized)
+
+
+def icon(name):
+    cfg = settings()
+    return ICONS[cfg["icon_mode"]].get(name, name)
+
+
+def density():
+    return settings().get("density", "balanced")
 
 
 def cache():
@@ -216,16 +308,27 @@ def dnd_status():
 
 def collect_system(previous=None):
     previous = previous or {}
+    view = density()
+    icons = settings()["icon_mode"]
     current_cpu = read_proc_stat()
     cpu = cpu_percent(previous.get("cpu_sample"), current_cpu)
     memory = memory_status()
     disk = disk_status()
     battery = battery_status()
     network = network_status()
-    critical = cpu and cpu >= 90 or memory["percent"] >= 90 or disk["percent"] >= 95
-    warning = cpu and cpu >= 75 or memory["percent"] >= 80 or disk["percent"] >= 90
+    critical = (cpu is not None and cpu >= 90) or memory["percent"] >= 90 or disk["percent"] >= 95
+    warning = (cpu is not None and cpu >= 75) or memory["percent"] >= 80 or disk["percent"] >= 90
     css = "system-critical" if critical else "system-warning" if warning else "system-good"
-    text = f"󰍛 {cpu if cpu is not None else 0}%  󰘚 {memory['percent']}%"
+    cpu_label = cpu if cpu is not None else 0
+    if view == "compact":
+        text = f"{icon('cpu')} {cpu_label}%"
+    elif view == "large":
+        if icons == "plain":
+            text = f"CPU {cpu_label}%  RAM {memory['percent']}%"
+        else:
+            text = f"{icon('cpu')} CPU {cpu_label}%  {icon('memory')} RAM {memory['percent']}%"
+    else:
+        text = f"{icon('cpu')} {cpu_label}%  {icon('memory')} {memory['percent']}%"
     tooltip = (
         f"CPU: {cpu if cpu is not None else 0}%\n"
         f"RAM: {memory['used_gb']}GB/{memory['total_gb']}GB ({memory['percent']}%)\n"
@@ -244,17 +347,28 @@ def collect_system(previous=None):
 
 
 def collect_quick():
+    view = density()
+    icons = settings()["icon_mode"]
     volume = volume_status()
     mic = mic_status()
     brightness = brightness_status()
     dnd = dnd_status()
     volume_label = "n/a" if volume["volume"] is None else f"{volume['volume']}%"
-    brightness_label = "" if brightness["percent"] is None else f"  ☀ {brightness['percent']}%"
+    brightness_label = "" if brightness["percent"] is None else f"  {icon('brightness')} {brightness['percent']}%"
     muted = volume["muted"] or mic["muted"]
     css = "quick-muted" if muted else "quick-normal"
     if dnd["enabled"]:
         css = "quick-critical"
-    text = f" {volume_label}{brightness_label}"
+    if view == "compact":
+        text = f"{icon('volume')} {volume_label}"
+    elif view == "large":
+        bright_text = "unknown" if brightness["percent"] is None else f"{brightness['percent']}%"
+        if icons == "plain":
+            text = f"Volume {volume_label}  Bright {bright_text}"
+        else:
+            text = f"{icon('volume')} Volume {volume_label}  {icon('brightness')} Bright {bright_text}"
+    else:
+        text = f"{icon('volume')} {volume_label}{brightness_label}"
     tooltip = (
         f"Volume: {volume_label}{' muted' if volume['muted'] else ''}\n"
         f"Mic: {'muted' if mic['muted'] else 'active'}\n"
@@ -288,6 +402,8 @@ def sync_summary():
 
 
 def collect_tools():
+    view = density()
+    icons = settings()["icon_mode"]
     session = session_summary()
     sync = sync_summary()
     if not sync["ok"]:
@@ -296,7 +412,15 @@ def collect_tools():
         css = "tools-warning"
     else:
         css = "tools-good"
-    text = f"🧰 {session['count']}"
+    if view == "compact":
+        text = f"{icon('tools')} {session['count']}"
+    elif view == "large":
+        if icons == "plain":
+            text = f"Tools · Session {session['count']}"
+        else:
+            text = f"{icon('tools')} Tools · Session {session['count']}"
+    else:
+        text = f"{icon('tools')} {session['count']}"
     tooltip = (
         f"Session apps: {session['count']}\n"
         f"Saved: {session['saved_at']}\n"
@@ -354,25 +478,237 @@ def show_text_panel(title, body):
         print(body)
 
 
+def launch(args):
+    if not args:
+        return False
+    if shutil.which(args[0]) is None and "/" not in args[0]:
+        return False
+    try:
+        subprocess.Popen(args, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except Exception:
+        return False
+
+
+def shell_launch(command):
+    try:
+        subprocess.Popen(["bash", "-lc", command], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return True
+    except Exception:
+        return False
+
+
+def notify(title, body=""):
+    if command_exists("notify-send"):
+        launch(["notify-send", "-a", "Material Waybar", title, body])
+
+
+def run_action(action):
+    actions = {
+        "volume-down": ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%-"],
+        "volume-up": ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", "5%+"],
+        "volume-mute": ["wpctl", "set-mute", "@DEFAULT_AUDIO_SINK@", "toggle"],
+        "mic-toggle": ["wpctl", "set-mute", "@DEFAULT_AUDIO_SOURCE@", "toggle"],
+        "brightness-down": ["brightnessctl", "set", "5%-"],
+        "brightness-up": ["brightnessctl", "set", "5%+"],
+        "notifications": ["swaync-client", "-t", "-sw"],
+        "dnd-toggle": ["swaync-client", "-d", "-sw"],
+        "session-save": ["bash", str(Path.home() / ".local/share/bin/hypr-session.sh"), "save"],
+        "session-restore": ["bash", str(Path.home() / ".local/share/bin/hypr-session.sh"), "restore"],
+        "session-gui": ["bash", str(Path.home() / ".local/share/bin/hypr-session.sh"), "gui"],
+        "sync-gui": ["bash", str(Path.home() / ".local/share/bin/dotfiles-sync.sh"), "gui"],
+        "sync-preview": ["bash", str(Path.home() / ".local/share/bin/dotfiles-sync.sh"), "sync", "--dry-run"],
+        "power": ["logoutlaunch.sh", "2"],
+    }
+    shell_actions = {
+        "wallpaper-next": "swwwallpaper.sh -n",
+        "wallpaper-select": "swwwallselect.sh",
+        "theme-next": "themeswitch.sh -n",
+        "theme-select": "themeselect.sh",
+        "clipboard": "cliphist.sh c",
+    }
+    if action in actions:
+        ok = launch(actions[action])
+    elif action in shell_actions:
+        ok = shell_launch(shell_actions[action])
+    else:
+        ok = False
+    if ok:
+        refresh()
+    else:
+        notify("Action unavailable", action)
+    return ok
+
+
+def yad_question(title, text, ok="Continue"):
+    if not command_exists("yad"):
+        return False
+    result = subprocess.run(
+        ["yad", "--question", f"--title={title}", f"--text={text}", "--button=Cancel:1", f"--button={ok}:0"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return result.returncode == 0
+
+
+def quick_panel():
+    quick = collect_quick()
+    text = (
+        f"{quick['tooltip']}\n\n"
+        "Choose an action. Missing tools simply do nothing and notify you."
+    )
+    if not command_exists("yad"):
+        show_text_panel("Quick Settings", text)
+        return
+    result = subprocess.run(
+        [
+            "yad",
+            "--form",
+            "--title=Material Quick Settings",
+            "--width=520",
+            f"--text={text}",
+            "--button=Vol -:10",
+            "--button=Vol +:11",
+            "--button=Mute:12",
+            "--button=Mic:13",
+            "--button=Dim:20",
+            "--button=Bright:21",
+            "--button=DND:30",
+            "--button=Notify:31",
+            "--button=Wallpaper:40",
+            "--button=Theme:41",
+            "--button=Clipboard:42",
+            "--button=Close:0",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    action_map = {
+        10: "volume-down",
+        11: "volume-up",
+        12: "volume-mute",
+        13: "mic-toggle",
+        20: "brightness-down",
+        21: "brightness-up",
+        30: "dnd-toggle",
+        31: "notifications",
+        40: "wallpaper-select",
+        41: "theme-select",
+        42: "clipboard",
+    }
+    action = action_map.get(result.returncode)
+    if action:
+        run_action(action)
+
+
+def tools_panel():
+    tools = collect_tools()
+    text = tools["tooltip"]
+    if not command_exists("yad"):
+        show_text_panel("Material Tools", text)
+        return
+    result = subprocess.run(
+        [
+            "yad",
+            "--form",
+            "--title=Material Tools",
+            "--width=560",
+            f"--text={text}",
+            "--button=Save Session:10",
+            "--button=Restore Session:11",
+            "--button=Session GUI:12",
+            "--button=Sync GUI:20",
+            "--button=Preview Sync:21",
+            "--button=Settings:30",
+            "--button=Close:0",
+        ],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    action_map = {
+        10: "session-save",
+        11: "session-restore",
+        12: "session-gui",
+        20: "sync-gui",
+        21: "sync-preview",
+    }
+    if result.returncode == 30:
+        show_settings()
+        return
+    action = action_map.get(result.returncode)
+    if action:
+        if action == "session-restore" and not yad_question("Restore Session", "Restore saved session apps now?", "Restore"):
+            return
+        run_action(action)
+
+
 def panel(name):
     if name == "system":
         section = collect_system(cache().get("system", {}))
         show_text_panel("System Health", section["tooltip"])
         return
     if name == "tools":
-        body = collect_tools()["tooltip"]
-        show_text_panel("Material Tools", body)
+        tools_panel()
         return
     if name == "quick":
-        body = collect_quick()["tooltip"] + "\n\nOpen dedicated apps for detailed control."
-        show_text_panel("Quick Settings", body)
+        quick_panel()
         return
     show_text_panel("Material Waybar", f"Unknown panel: {name}")
 
 
 def show_settings():
-    cfg = json.dumps(settings(), indent=2)
-    show_text_panel("Material Waybar Settings", f"Settings file:\n{SETTINGS_FILE}\n\n{cfg}")
+    cfg = settings()
+    if not command_exists("yad"):
+        show_text_panel("Material Waybar Settings", f"Settings file:\n{SETTINGS_FILE}\n\n{json.dumps(cfg, indent=2)}")
+        return
+    density_choices = "!".join([cfg["density"]] + [item for item in ["compact", "balanced", "large"] if item != cfg["density"]])
+    icon_choices = "!".join([cfg["icon_mode"]] + [item for item in ["emoji", "nerd", "plain"] if item != cfg["icon_mode"]])
+    result = subprocess.run(
+        [
+            "yad",
+            "--form",
+            "--title=Material Waybar Settings",
+            "--width=520",
+            f"--text=Settings file: {SETTINGS_FILE}",
+            "--field=Density:CB",
+            density_choices,
+            "--field=Icon mode:CB",
+            icon_choices,
+            "--field=System interval seconds:NUM",
+            f"{cfg['intervals']['system']}!1..60!1",
+            "--field=Quick interval seconds:NUM",
+            f"{cfg['intervals']['quick']}!1..60!1",
+            "--field=Tools interval seconds:NUM",
+            f"{cfg['intervals']['tools']}!5..300!5",
+            "--button=Cancel:1",
+            "--button=Save:0",
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return
+    fields = result.stdout.rstrip("\n").split("|")
+    if len(fields) < 5:
+        notify("Settings not saved", "Unexpected settings form output.")
+        return
+    cfg["density"] = fields[0] if fields[0] in {"compact", "balanced", "large"} else "balanced"
+    cfg["icon_mode"] = fields[1] if fields[1] in ICONS else "emoji"
+    for key, raw in [("system", fields[2]), ("quick", fields[3]), ("tools", fields[4])]:
+        try:
+            cfg["intervals"][key] = max(1, int(float(raw)))
+        except Exception:
+            pass
+    if save_settings(cfg):
+        refresh()
+        notify("Material Waybar settings saved", f"Density: {cfg['density']}, icons: {cfg['icon_mode']}")
+    else:
+        notify("Settings not saved", str(SETTINGS_FILE))
 
 
 def refresh():

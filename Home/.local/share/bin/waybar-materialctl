@@ -5,6 +5,10 @@ set -o pipefail
 
 MAT_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/waybar/material"
 HUB="${MAT_DIR}/waybar-hub.py"
+WAYBAR_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/waybar"
+ACTIVE_CONFIG="${WAYBAR_DIR}/config.jsonc"
+ACTIVE_STYLE="${WAYBAR_DIR}/style.css"
+BACKUP_DIR="${WAYBAR_DIR}/classic-backups"
 
 if [ ! -f "${HUB}" ]; then
     echo "Material Waybar hub not found: ${HUB}" >&2
@@ -47,6 +51,39 @@ case "${1:-help}" in
             echo "No Material Waybar preview pid file found."
         fi
         ;;
+    activate)
+        stamp="$(date +%Y%m%d-%H%M%S)"
+        mkdir -p "${BACKUP_DIR}"
+        [ -f "${ACTIVE_CONFIG}" ] && cp -a "${ACTIVE_CONFIG}" "${BACKUP_DIR}/config.jsonc.${stamp}"
+        [ -f "${ACTIVE_STYLE}" ] && cp -a "${ACTIVE_STYLE}" "${BACKUP_DIR}/style.css.${stamp}"
+        cp -a "${MAT_DIR}/config.jsonc" "${ACTIVE_CONFIG}"
+        cat > "${ACTIVE_STYLE}" <<'CSS'
+@import "material/style.css";
+CSS
+        echo "${stamp}" > "${BACKUP_DIR}/latest"
+        echo "Material Waybar activated."
+        echo "Classic backup stamp: ${stamp}"
+        ;;
+    restore-classic)
+        if [ ! -f "${BACKUP_DIR}/latest" ]; then
+            echo "No classic backup stamp found: ${BACKUP_DIR}/latest" >&2
+            exit 1
+        fi
+        stamp="$(cat "${BACKUP_DIR}/latest")"
+        if [ ! -f "${BACKUP_DIR}/config.jsonc.${stamp}" ] || [ ! -f "${BACKUP_DIR}/style.css.${stamp}" ]; then
+            echo "Classic backup files missing for stamp ${stamp}" >&2
+            exit 1
+        fi
+        cp -a "${BACKUP_DIR}/config.jsonc.${stamp}" "${ACTIVE_CONFIG}"
+        cp -a "${BACKUP_DIR}/style.css.${stamp}" "${ACTIVE_STYLE}"
+        echo "Classic Waybar restored from backup stamp: ${stamp}"
+        ;;
+    restart)
+        pkill waybar 2>/dev/null || true
+        nohup waybar >/tmp/waybar-material-restart.log 2>&1 &
+        echo "Waybar restarted with default config."
+        echo "Log: /tmp/waybar-material-restart.log"
+        ;;
     start)
         waybar -c "${MAT_DIR}/config.jsonc" -s "${MAT_DIR}/style.css"
         ;;
@@ -61,6 +98,9 @@ Commands:
   refresh             Refresh cache and signal Waybar modules
   preview             Start a temporary Material Waybar preview
   stop-preview        Stop the temporary Material Waybar preview
+  activate            Back up classic config and make Material the default
+  restore-classic     Restore the latest classic config backup
+  restart             Restart default Waybar
   start               Start Waybar with the Material config
 EOF
         ;;
