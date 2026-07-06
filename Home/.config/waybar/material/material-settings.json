@@ -21,7 +21,8 @@
   "intervals": {
     "system": 5,
     "quick": 5,
-    "tools": 30
+    "tools": 30,
+    "hyprland": 3
   },
   "panels": {
     "backend": "yad",

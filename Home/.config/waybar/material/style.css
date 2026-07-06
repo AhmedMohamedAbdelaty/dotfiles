@@ -36,6 +36,7 @@ tooltip label {
 
 #custom-mpwidget,
 #custom-material-system,
+#custom-material-hyprland,
 #clock,
 #custom-prayertimes,
 #workspaces,
@@ -58,6 +59,7 @@ tooltip label {
 
 #custom-mpwidget:hover,
 #custom-material-system:hover,
+#custom-material-hyprland:hover,
 #clock:hover,
 #custom-prayertimes:hover,
 #custom-material-quick:hover,
@@ -110,6 +112,7 @@ tooltip label {
 }
 
 #custom-material-system.system-normal,
+#custom-material-hyprland.hyprland-empty,
 #custom-material-quick.quick-normal,
 #custom-material-tools.tools-ready,
 #custom-timer-manager.timer-idle {
@@ -134,6 +137,7 @@ tooltip label {
 }
 
 #custom-material-system.system-good,
+#custom-material-hyprland.hyprland-active,
 #custom-material-tools.tools-good,
 #custom-timer-manager.timer-active,
 #battery.charging {
@@ -173,6 +177,11 @@ tooltip label {
 
 #custom-material-system {
     min-width: 76px;
+}
+
+#custom-material-hyprland {
+    color: @material-info;
+    min-width: 92px;
 }
 
 #custom-material-quick {

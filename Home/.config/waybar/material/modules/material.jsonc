@@ -61,6 +61,19 @@
         "on-scroll-down": "hyprctl dispatch workspace +1",
         "persistent-workspaces": {}
     },
+    "custom/material-hyprland": {
+        "exec": "python3 ~/.config/waybar/material/waybar-hub.py status hyprland",
+        "return-type": "json",
+        "format": "{text}",
+        "interval": 3,
+        "signal": 27,
+        "on-click": "python3 ~/.config/waybar/material/waybar-hub.py panel hyprland",
+        "on-click-right": "hyprctl activewindow",
+        "on-click-middle": "hyprctl dispatch togglespecialworkspace",
+        "tooltip": true,
+        "escape": true,
+        "max-length": 38
+    },
     "wlr/taskbar": {
         "format": "{icon}",
         "icon-size": 18,

@@ -25,6 +25,7 @@ DEFAULT_SETTINGS = {
     "theme_mode": "wallbash",
     "modules": {
         "media": False,
+        "hyprland": True,
         "system": True,
         "clock": True,
         "prayer": True,
@@ -42,6 +43,7 @@ DEFAULT_SETTINGS = {
         "system": 5,
         "quick": 5,
         "tools": 30,
+        "hyprland": 3,
     },
     "panels": {
         "backend": "yad",
@@ -58,6 +60,7 @@ ICONS = {
         "tools": "🧰",
         "warning": "⚠",
         "settings": "⚙",
+        "workspace": "🪟",
     },
     "nerd": {
         "cpu": "󰍛",
@@ -67,6 +70,7 @@ ICONS = {
         "tools": "󱂬",
         "warning": "󰀪",
         "settings": "",
+        "workspace": "󰣇",
     },
     "plain": {
         "cpu": "CPU",
@@ -76,6 +80,7 @@ ICONS = {
         "tools": "TOOLS",
         "warning": "!",
         "settings": "SET",
+        "workspace": "WIN",
     },
 }
 
@@ -401,6 +406,129 @@ def sync_summary():
     return {"repo": repo, "expected_branch": expected, "branch": branch, "ok": ok}
 
 
+def hypr_json(command, timeout=0.7):
+    if not command_exists("hyprctl"):
+        return None
+    code, output = run(["hyprctl", "-j", command], timeout=timeout)
+    if code != 0 or not output:
+        return None
+    try:
+        return json.loads(output)
+    except Exception:
+        return None
+
+
+def collect_hyprland(_previous=None):
+    view = density()
+    clients = hypr_json("clients") or []
+    workspaces = hypr_json("workspaces") or []
+    active_workspace = hypr_json("activeworkspace") or {}
+    active_window = hypr_json("activewindow") or {}
+    clients = clients if isinstance(clients, list) else []
+    workspaces = workspaces if isinstance(workspaces, list) else []
+    active_ws_id = active_workspace.get("id")
+
+    grouped = {}
+    for client in clients:
+        workspace = client.get("workspace", {}) if isinstance(client, dict) else {}
+        ws_id = workspace.get("id")
+        if ws_id is None:
+            continue
+        grouped.setdefault(ws_id, []).append(client)
+
+    non_special_workspaces = [
+        ws for ws in workspaces
+        if isinstance(ws, dict) and isinstance(ws.get("id"), int) and ws.get("id", 0) > 0
+    ]
+    visible_workspace_count = len(non_special_workspaces) or len([key for key in grouped if isinstance(key, int) and key > 0])
+    active_count = len(grouped.get(active_ws_id, [])) if active_ws_id is not None else 0
+    total_windows = len(clients)
+    active_title = visible_text(active_window.get("title")) or visible_text(active_window.get("class")) or "Desktop"
+    active_class = visible_text(active_window.get("class"))
+    active_short = shorten(active_title, 30 if view == "large" else 18)
+
+    if view == "compact":
+        text = f"{icon('workspace')} {active_ws_id or '-'}:{active_count}"
+    elif view == "large":
+        if settings()["icon_mode"] == "plain":
+            text = f"Workspace {active_ws_id or '-'} · {active_short}"
+        else:
+            text = f"{icon('workspace')} Workspace {active_ws_id or '-'} · {active_short}"
+    else:
+        text = f"{icon('workspace')} {active_ws_id or '-'} · {active_short}"
+
+    tooltip_lines = [
+        f"Active workspace: {active_ws_id or 'unknown'}",
+        f"Active app: {active_class or 'unknown'}",
+        f"Active title: {active_title}",
+        f"Windows on workspace: {active_count}",
+        f"Total windows: {total_windows}",
+        f"Open workspaces: {visible_workspace_count}",
+        "",
+        "Left click: workspace window panel",
+        "Right click: active window details",
+        "Middle click: toggle special workspace",
+    ]
+    css = "hyprland-empty" if total_windows == 0 else "hyprland-active"
+    return {
+        "timestamp": time.time(),
+        "text": text,
+        "tooltip": "\n".join(tooltip_lines),
+        "class": css,
+        "clients": summarize_clients(clients),
+        "workspaces": summarize_workspaces(workspaces),
+        "active_workspace": active_ws_id,
+        "active_title": active_title,
+    }
+
+
+def shorten(text, limit):
+    text = visible_text(text)
+    if len(text) <= limit:
+        return text
+    return text[: max(1, limit - 1)].rstrip() + "…"
+
+
+def visible_text(text):
+    text = str(text or "")
+    text = re.sub(r"[\u200b-\u200f\u202a-\u202e\u2060-\u206f]", "", text)
+    return " ".join(text.split())
+
+
+def summarize_clients(clients):
+    summary = []
+    for client in clients:
+        if not isinstance(client, dict):
+            continue
+        workspace = client.get("workspace", {}) if isinstance(client.get("workspace"), dict) else {}
+        summary.append({
+            "address": client.get("address", ""),
+            "class": visible_text(client.get("class")),
+            "title": visible_text(client.get("title")),
+            "workspace": workspace.get("id"),
+            "workspace_name": workspace.get("name", ""),
+            "floating": bool(client.get("floating")),
+            "fullscreen": client.get("fullscreen", 0),
+        })
+    summary.sort(key=lambda item: (item.get("workspace") or 9999, item.get("class") or "", item.get("title") or ""))
+    return summary
+
+
+def summarize_workspaces(workspaces):
+    summary = []
+    for workspace in workspaces:
+        if not isinstance(workspace, dict):
+            continue
+        summary.append({
+            "id": workspace.get("id"),
+            "name": workspace.get("name", ""),
+            "windows": workspace.get("windows", 0),
+            "monitor": workspace.get("monitor", ""),
+        })
+    summary.sort(key=lambda item: item.get("id") if isinstance(item.get("id"), int) else 9999)
+    return summary
+
+
 def collect_tools():
     view = density()
     icons = settings()["icon_mode"]
@@ -452,6 +580,8 @@ def status(name):
         section = cached_section("quick", lambda _: collect_quick(), int(intervals.get("quick", 5)))
     elif name == "tools":
         section = cached_section("tools", lambda _: collect_tools(), int(intervals.get("tools", 30)))
+    elif name == "hyprland":
+        section = cached_section("hyprland", collect_hyprland, int(intervals.get("hyprland", 3)))
     else:
         json_line({"text": "?", "tooltip": f"Unknown status: {name}", "class": "tools-error"})
         return
@@ -550,6 +680,73 @@ def yad_question(title, text, ok="Continue"):
         check=False,
     )
     return result.returncode == 0
+
+
+def hyprland_panel():
+    section = collect_hyprland()
+    clients = section.get("clients", [])
+    if not clients:
+        show_text_panel("Workspace Windows", "No windows are open.")
+        return
+    if not command_exists("yad"):
+        body = "\n".join(
+            f"Workspace {item.get('workspace')}: {item.get('class')} - {item.get('title')}"
+            for item in clients
+        )
+        show_text_panel("Workspace Windows", body)
+        return
+
+    rows = []
+    for item in clients:
+        rows.extend([
+            str(item.get("workspace") or ""),
+            item.get("class") or "",
+            shorten(item.get("title") or "", 80),
+            item.get("address") or "",
+        ])
+    result = subprocess.run(
+        [
+            "yad",
+            "--list",
+            "--title=Workspace Windows",
+            "--width=920",
+            "--height=560",
+            "--column=Workspace",
+            "--column=Class",
+            "--column=Title",
+            "--column=Address",
+            "--hide-column=4",
+            "--print-column=4",
+            "--button=Focus:10",
+            "--button=Move Here:20",
+            "--button=Toggle Float:30",
+            "--button=Close:40",
+            "--button=Refresh:50",
+            "--button=Close Panel:0",
+            *rows,
+        ],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        text=True,
+        check=False,
+    )
+    address = result.stdout.strip().split("|")[-1] if result.stdout.strip() else ""
+    if result.returncode == 50:
+        refresh()
+        hyprland_panel()
+        return
+    if not address:
+        return
+    if result.returncode == 10:
+        run(["hyprctl", "dispatch", "focuswindow", f"address:{address}"], timeout=0.7)
+    elif result.returncode == 20:
+        run(["hyprctl", "dispatch", "movetoworkspace", "current", f"address:{address}"], timeout=0.7)
+    elif result.returncode == 30:
+        run(["hyprctl", "dispatch", "togglefloating", f"address:{address}"], timeout=0.7)
+    elif result.returncode == 40:
+        if yad_question("Close Window", "Close the selected window?", "Close"):
+            run(["hyprctl", "dispatch", "closewindow", f"address:{address}"], timeout=0.7)
+    refresh()
 
 
 def quick_panel():
@@ -656,6 +853,9 @@ def panel(name):
     if name == "quick":
         quick_panel()
         return
+    if name == "hyprland":
+        hyprland_panel()
+        return
     show_text_panel("Material Waybar", f"Unknown panel: {name}")
 
 
@@ -683,6 +883,8 @@ def show_settings():
             f"{cfg['intervals']['quick']}!1..60!1",
             "--field=Tools interval seconds:NUM",
             f"{cfg['intervals']['tools']}!5..300!5",
+            "--field=Hyprland interval seconds:NUM",
+            f"{cfg['intervals']['hyprland']}!1..60!1",
             "--button=Cancel:1",
             "--button=Save:0",
         ],
@@ -694,12 +896,12 @@ def show_settings():
     if result.returncode != 0:
         return
     fields = result.stdout.rstrip("\n").split("|")
-    if len(fields) < 5:
+    if len(fields) < 6:
         notify("Settings not saved", "Unexpected settings form output.")
         return
     cfg["density"] = fields[0] if fields[0] in {"compact", "balanced", "large"} else "balanced"
     cfg["icon_mode"] = fields[1] if fields[1] in ICONS else "emoji"
-    for key, raw in [("system", fields[2]), ("quick", fields[3]), ("tools", fields[4])]:
+    for key, raw in [("system", fields[2]), ("quick", fields[3]), ("tools", fields[4]), ("hyprland", fields[5])]:
         try:
             cfg["intervals"][key] = max(1, int(float(raw)))
         except Exception:
@@ -716,13 +918,14 @@ def refresh():
         "system": collect_system(cache().get("system", {})),
         "quick": collect_quick(),
         "tools": collect_tools(),
+        "hyprland": collect_hyprland(),
     }
     save_cache(data)
     print(str(CACHE_FILE))
 
 
 def usage():
-    print("Usage: waybar-hub.py status <system|quick|tools> | panel <system|quick|tools> | settings | refresh")
+    print("Usage: waybar-hub.py status <system|quick|tools|hyprland> | panel <system|quick|tools|hyprland> | settings | refresh")
 
 
 def main(argv):

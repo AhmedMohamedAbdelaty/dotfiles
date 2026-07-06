@@ -20,6 +20,7 @@
     ],
     "modules-center": [
         "hyprland/workspaces",
+        "custom/material-hyprland",
         "wlr/taskbar"
     ],
     "modules-right": [

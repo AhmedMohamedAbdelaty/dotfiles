@@ -30,6 +30,7 @@ case "${1:-help}" in
         pkill -RTMIN+24 waybar 2>/dev/null || true
         pkill -RTMIN+25 waybar 2>/dev/null || true
         pkill -RTMIN+26 waybar 2>/dev/null || true
+        pkill -RTMIN+27 waybar 2>/dev/null || true
         ;;
     preview)
         log="/tmp/waybar-material-preview.log"
