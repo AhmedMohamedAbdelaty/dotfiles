@@ -12,7 +12,9 @@ ROOT = Path.home() / '.config/hypr'
 variables = dict(os.environ)
 output = ['-- Restored from the preserved HyDE .conf source chain.',
           '-- Rebuild after editing those files: python ~/.config/hypr/recovery/rebuild.py',
-          'local startup, reload = {}, {}']
+          'local startup, reload = {}, {}',
+          '-- HyMission checks its Hyprland ABI before loading; failure must not break the desktop.',
+          'pcall(hl.plugin.load, os.getenv("HOME") .. "/.local/lib/hymission.so")']
 sources = []
 bind_positions = {}
 bindings = {}
@@ -98,6 +100,9 @@ def bind(kind, text, comment=''):
                        'else hl.dispatch(hl.dsp.window.move({ direction = %s })) end end') % (dx, dy, lua(direction))
         else:
             handler = 'hl.dsp.exec_cmd(' + lua(arg) + ')'
+    elif action == 'hymission:toggle':
+        handler = ('function() pcall(function() hl.plugin.hymission.toggle('
+                   + (lua(arg) if arg else '') + ') end) end')
     elif action == 'exit': handler = 'hl.dsp.exit()'
     elif action == 'togglefloating': handler = 'hl.dsp.window.float({ action = "toggle" })'
     elif action == 'togglegroup': handler = 'hl.dsp.group.toggle()'

@@ -1,6 +1,8 @@
 -- Restored from the preserved HyDE .conf source chain.
 -- Rebuild after editing those files: python ~/.config/hypr/recovery/rebuild.py
 local startup, reload = {}, {}
+-- HyMission checks its Hyprland ABI before loading; failure must not break the desktop.
+pcall(hl.plugin.load, os.getenv("HOME") .. "/.local/lib/hymission.so")
 
 -- hyprland.conf
 hl.monitor({ ["output"] = "", ["mode"] = "preferred", ["position"] = "auto", ["scale"] = "auto" })
@@ -176,6 +178,8 @@ hl.bind("Super + Alt + 7", hl.dsp.window.move({ ["workspace"] = 7, ["follow"] = 
 hl.bind("Super + Alt + 8", hl.dsp.window.move({ ["workspace"] = 8, ["follow"] = false }))
 hl.bind("Super + Alt + 9", hl.dsp.window.move({ ["workspace"] = 9, ["follow"] = false }))
 hl.bind("Super + Alt + 0", hl.dsp.window.move({ ["workspace"] = 10, ["follow"] = false }))
+hl.bind("Super + Y", function() pcall(function() hl.plugin.hymission.toggle() end) end, { ["description"] = "Mission Control" })
+hl.bind("Super + SHIFT + Y", function() pcall(function() hl.plugin.hymission.toggle("forceall") end) end, { ["description"] = "Mission Control on all workspaces" })
 hl.bind("Super + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
 hl.bind("Super + SHIFT + N", hl.dsp.exec_cmd("swaync-client -C"))
 hl.bind("Super + CTRL + N", hl.dsp.exec_cmd("swaync-client -d -sw"))

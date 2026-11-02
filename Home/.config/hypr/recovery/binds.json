@@ -1172,6 +1172,30 @@
     "has_description": false
   },
   {
+    "keybind": "Super + Y",
+    "description": "Mission Control",
+    "handler": "function() pcall(function() hl.plugin.hymission.toggle() end) end",
+    "mouse": false,
+    "dispatcher": "hymission:toggle",
+    "arg": "",
+    "options": {
+      "description": "Mission Control"
+    },
+    "has_description": true
+  },
+  {
+    "keybind": "Super + SHIFT + Y",
+    "description": "Mission Control on all workspaces",
+    "handler": "function() pcall(function() hl.plugin.hymission.toggle(\"forceall\") end) end",
+    "mouse": false,
+    "dispatcher": "hymission:toggle",
+    "arg": "forceall",
+    "options": {
+      "description": "Mission Control on all workspaces"
+    },
+    "has_description": true
+  },
+  {
     "keybind": "Super + N",
     "description": "exec swaync-client -t -sw",
     "handler": "hl.dsp.exec_cmd(\"swaync-client -t -sw\")",

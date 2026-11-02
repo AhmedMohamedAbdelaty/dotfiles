@@ -31,7 +31,9 @@ elif sys.argv[1:2] == ['--dispatch']:
     for binding in bindings:
         if binding['dispatcher'] == dispatcher and binding['arg'].split() == arg.split():
             if not binding['mouse']:
-                result = subprocess.run(['hyprctl', 'eval', 'hl.dispatch(' + binding['handler'] + ')'],
+                handler = binding['handler']
+                expression = '(' + handler + ')()' if dispatcher == 'hymission:toggle' else 'hl.dispatch(' + handler + ')'
+                result = subprocess.run(['hyprctl', 'eval', expression],
                                         capture_output=True, text=True)
                 if result.returncode or result.stdout.strip() != 'ok':
                     sys.exit(result.stderr or result.stdout or 'Shortcut action failed')
