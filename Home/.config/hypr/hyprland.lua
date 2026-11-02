@@ -369,6 +369,8 @@ hl.config({ ["cursor"] = { ["no_hardware_cursors"] = true } })
 
 local function refresh()
     if not hl.get_active_monitor() then return end
+    -- Start search on demand so its helper does not delay overview input.
+    pcall(function() hl.config({ plugin = { hymission = { vim_keys = true } } }) end)
     for _, command in ipairs(reload) do hl.exec_cmd(command) end
 end
 hl.on("config.reloaded", refresh)
