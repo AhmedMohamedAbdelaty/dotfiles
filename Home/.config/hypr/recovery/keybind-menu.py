@@ -1,26 +1,43 @@
 #!/usr/bin/env python3
-"""Show and execute the recovered Lua keybindings using the existing Rofi theme."""
+"""Adapt recovered Lua bindings to the original HyDE menu's data and actions."""
 import json
+import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
 root = Path(__file__).resolve().parent
 bindings = json.loads((root/'binds.json').read_text())
-bindings.sort(key=lambda b: b['keybind'].upper())
-if '-j' in sys.argv:
+if sys.argv[1:2] == ['--legacy-json']:
+    masks = {'SHIFT': 1, 'CAPS': 2, 'CTRL': 4, 'CONTROL': 4, 'ALT': 8, 'SUPER': 64}
+    rows = []
     for binding in bindings:
-        print(json.dumps(binding))
-    raise SystemExit(0)
-labels = [b['keybind'] + '  →  ' + b['description'] for b in bindings]
-if '-p' in sys.argv:
-    print('\n'.join(labels))
-    raise SystemExit(0)
-selection = subprocess.run(['rofi', '-dmenu', '-i', '-no-custom', '-format', 'i',
-                            '-p', 'Keybindings', '-theme', str(Path.home()/'.config/rofi/clipboard.rasi')],
-                           input='\n'.join(labels), text=True, capture_output=True)
-if selection.returncode:
-    raise SystemExit(0)
-binding = bindings[int(selection.stdout.strip())]
-if not binding['mouse']:
-    subprocess.run(['hyprctl', 'eval', 'hl.dispatch(' + binding['handler'] + ')'], check=True)
+        parts = re.split(r'\s*\+\s*', binding['keybind'])
+        options = binding['options']
+        rows.append({
+            'key': parts[-1], 'keycode': 0,
+            'modmask': sum(masks[part.upper()] for part in parts[:-1]),
+            'dispatcher': binding['dispatcher'], 'arg': binding['arg'],
+            'description': binding['description'],
+            'has_description': binding['has_description'],
+            'locked': options.get('locked', False),
+            'mouse': binding['mouse'], 'release': False,
+            'repeat': options.get('repeating', False), 'non_consuming': False,
+        })
+    print(json.dumps(rows))
+elif sys.argv[1:2] == ['--dispatch']:
+    dispatcher, arg = sys.argv[2:4]
+    for binding in bindings:
+        if binding['dispatcher'] == dispatcher and binding['arg'].split() == arg.split():
+            if not binding['mouse']:
+                result = subprocess.run(['hyprctl', 'eval', 'hl.dispatch(' + binding['handler'] + ')'],
+                                        capture_output=True, text=True)
+                if result.returncode or result.stdout.strip() != 'ok':
+                    sys.exit(result.stderr or result.stdout or 'Shortcut action failed')
+            break
+    else:
+        sys.exit('Selected shortcut is no longer configured; reopen the menu.')
+else:
+    script = Path.home()/'.local/share/bin/keybinds_hint.sh'
+    os.execv(str(script), [str(script), *sys.argv[1:]])

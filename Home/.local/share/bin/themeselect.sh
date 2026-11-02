@@ -19,7 +19,7 @@ icon_border=$(( elem_border - 5 ))
 #// scale for monitor
 
 mon_x_res=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
-mon_scale=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .scale' | sed "s/\.//")
+mon_scale=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .scale * 100 | round')
 mon_x_res=$(( mon_x_res * 100 / mon_scale ))
 
 
@@ -30,12 +30,14 @@ case "${themeSelect}" in
     elm_width=$(( (20 + 12) * rofiScale * 2 ))
     max_avail=$(( mon_x_res - (4 * rofiScale) ))
     col_count=$(( max_avail / elm_width ))
+    [[ "${col_count}" -lt 1 ]] && col_count=1
     r_override="window{width:100%;background-color:#00000003;} listview{columns:${col_count};} element{border-radius:${elem_border}px;background-color:@main-bg;} element-icon{size:20em;border-radius:${icon_border}px 0px 0px ${icon_border}px;}"
     thmbExtn="quad" ;;
 *) # default to style 1
     elm_width=$(( (23 + 12 + 1) * rofiScale * 2 ))
     max_avail=$(( mon_x_res - (4 * rofiScale) ))
     col_count=$(( max_avail / elm_width ))
+    [[ "${col_count}" -lt 1 ]] && col_count=1
     r_override="window{width:100%;} listview{columns:${col_count};} element{border-radius:${elem_border}px;padding:0.5em;} element-icon{size:23em;border-radius:${icon_border}px;}"
     thmbExtn="sqre" ;;
 esac
@@ -46,7 +48,9 @@ esac
 get_themes
 
 rofiSel=$(for i in ${!thmList[@]} ; do
-    echo -en "${thmList[i]}\x00icon\x1f${thmbDir}/$(set_hash "${thmWall[i]}").${thmbExtn}\n"
+    preview="${thmbDir}/$(set_hash "${thmWall[i]}").${thmbExtn}"
+    [ -s "${preview}" ] || preview="${thmWall[i]}"
+    printf '%s\0icon\x1f%s\n' "${thmList[i]}" "${preview}"
 done | rofi -dmenu -theme-str "${r_scale}" -theme-str "${r_override}" -config "${rofiConf}" -select "${hydeTheme}")
 
 

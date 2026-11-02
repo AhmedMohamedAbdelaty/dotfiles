@@ -18,7 +18,7 @@ elem_border=$([ $hypr_border -eq 0 ] && echo "5" || echo $hypr_border)
 readarray -t curPos < <(hyprctl cursorpos -j | jq -r '.x,.y')
 readarray -t monRes < <(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width,.height,.scale,.x,.y')
 readarray -t offRes < <(hyprctl -j monitors | jq -r '.[] | select(.focused==true).reserved | map(tostring) | join("\n")')
-monRes[2]="$(echo "${monRes[2]}" | sed "s/\.//")"
+monRes[2]="$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .scale * 100 | round')"
 monRes[0]="$(( ${monRes[0]} * 100 / ${monRes[2]} ))"
 monRes[1]="$(( ${monRes[1]} * 100 / ${monRes[2]} ))"
 curPos[0]="$(( ${curPos[0]} - ${monRes[3]} ))"

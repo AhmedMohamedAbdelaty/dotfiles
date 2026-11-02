@@ -9,7 +9,7 @@ startup[#startup + 1] = "dbus-update-activation-environment --systemd WAYLAND_DI
 startup[#startup + 1] = "dbus-update-activation-environment --systemd --all"
 startup[#startup + 1] = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 startup[#startup + 1] = "/home/ahmed/.local/share/bin/polkitkdeauth.sh"
-startup[#startup + 1] = "waybar"
+startup[#startup + 1] = "systemctl --user import-environment PATH WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP && systemctl --user start waybar.service"
 startup[#startup + 1] = "blueman-applet"
 startup[#startup + 1] = "udiskie --no-automount --smart-tray"
 startup[#startup + 1] = "nm-applet --indicator"
@@ -76,7 +76,7 @@ hl.bind("Alt + Return", hl.dsp.window.fullscreen())
 hl.bind("Super + L", hl.dsp.exec_cmd("swaylock"))
 hl.bind("Super + Shift + F", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/windowpin.sh"))
 hl.bind("Super + Backspace", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/logoutlaunch.sh"))
-hl.bind("Ctrl + Alt + W", hl.dsp.exec_cmd("killall waybar || waybar"))
+hl.bind("Ctrl + Alt + W", hl.dsp.exec_cmd("systemctl --user is-active --quiet waybar.service && systemctl --user stop waybar.service || systemctl --user start waybar.service"))
 hl.bind("Super + Ctrl + T", hl.dsp.exec_cmd("~/.config/waybar/restart-tray.sh"))
 hl.bind("Super + Ctrl + S", hl.dsp.exec_cmd("bash /home/ahmed/.local/share/bin/hypr-session.sh save"))
 hl.bind("Super + Ctrl + R", hl.dsp.exec_cmd("bash /home/ahmed/.local/share/bin/hypr-session.sh restore"))

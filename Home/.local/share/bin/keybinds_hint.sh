@@ -6,9 +6,6 @@
 #* Khing 🦆
 
 pkill -x rofi && exit
-if [ -f "$HOME/.config/hypr/recovery/binds.json" ]; then
-  exec python "$HOME/.config/hypr/recovery/keybind-menu.py" "$@"
-fi
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 
@@ -259,8 +256,13 @@ OVERRIDES
 
 #? Script to re Modify hyprctl json output
 #? Basically we are using jq to handle json data and outputs a pretty and friendly output
+if [ -f "$keyconfDir/recovery/binds.json" ]; then
+  bindData=$(python "$keyconfDir/recovery/keybind-menu.py" --legacy-json)
+else
+  bindData=$(hyprctl binds -j)
+fi
 jsonData="$(
-  hyprctl binds -j | jq -L "$tmpMapDir" -c '
+  printf '%s\n' "$bindData" | jq -L "$tmpMapDir" -c '
 include "hyde-keybinds";
 
   #? Functions to Convert modmask into Keys, There should be a better math for this but Im lazy
@@ -396,7 +398,15 @@ run_sel="$(echo "$run" | awk -F '!=!' '{gsub(/^ *| *$/, "", $5); if ($5 ~ /[[:sp
 #   echo "$run_sel" ; echo "$run_flg"
 
 #?
-RUN() { case "$(eval "hyprctl dispatch $run_sel")" in *"Not enough arguments"*) exec $0 ;; esac }
+RUN() {
+  if [ -f "$keyconfDir/recovery/binds.json" ]; then
+    run_dispatcher=$(awk -F '!=!' '{gsub(/^ *| *$/, "", $4); print $4}' <<< "$run")
+    run_arg=$(awk -F '!=!' '{gsub(/^ *| *$/, "", $5); print $5}' <<< "$run")
+    python "$keyconfDir/recovery/keybind-menu.py" --dispatch "$run_dispatcher" "$run_arg"
+  else
+    case "$(eval "hyprctl dispatch $run_sel")" in *"Not enough arguments"*) exec $0 ;; esac
+  fi
+}
 
 #? If flag is repeat then repeat rofi if not then just execute once
 if [ -n "$run_sel" ] && [ "$(echo "$run_sel" | wc -l)" -eq 1 ]; then

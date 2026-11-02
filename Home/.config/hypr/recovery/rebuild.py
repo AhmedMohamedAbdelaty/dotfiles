@@ -73,7 +73,7 @@ def rule(kind, text):
     output.append('hl.' + kind + '(' + lua({'match': matches, key: scalar(value)}) + ')')
 
 
-def bind(kind, text):
+def bind(kind, text, comment=''):
     parts = [p.strip() for p in text.split(',', 4 if 'd' in kind[4:] else 3)]
     mods, key = parts[:2]
     options = {}
@@ -116,8 +116,11 @@ def bind(kind, text):
     else: raise ValueError('Unsupported bind: ' + text)
     statement = 'hl.bind(' + lua(keys) + ', ' + handler + (', ' + lua(options) if options else '') + ')'
     identity = keys.upper().replace(' ', '')
-    bindings[identity] = {'keybind': keys, 'description': options.get('description') or (action + ' ' + arg).strip(),
-                          'handler': handler, 'mouse': options.get('mouse', False)}
+    description = options.get('description') or (comment[:1].upper() + comment[1:])
+    bindings[identity] = {'keybind': keys, 'description': description or (action + ' ' + arg).strip(),
+                          'handler': handler, 'mouse': options.get('mouse', False),
+                          'dispatcher': action, 'arg': arg, 'options': options,
+                          'has_description': bool(description)}
     if identity in bind_positions:
         output[bind_positions[identity]] = statement
     else:
@@ -178,7 +181,7 @@ def read(path):
             if value == 'dunst': value = 'swaync'
             output.append('startup[#startup + 1] = ' + lua(value))
         elif key == 'exec': output.append('reload[#reload + 1] = ' + lua(value))
-        elif key.startswith('bind'): bind(key, value)
+        elif key.startswith('bind'): bind(key, value, raw.partition('#')[2].strip())
         elif key == 'windowrule': rule('window_rule', value)
         elif key == 'layerrule': rule('layer_rule', value)
         elif key == 'blurls': rule('layer_rule', 'blur,' + value)
