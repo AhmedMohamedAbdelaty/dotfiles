@@ -68,7 +68,7 @@ source "${scrDir}/globalcontrol.sh"
 
 
 #// hypr
-[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] &&  hyprctl keyword misc:disable_autoreload 1 -q
+[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && hyprctl eval 'hl.config({ misc = { disable_autoreload = true } })' -q
 sed '1d' "${hydeThemeDir}/hypr.theme" > "${confDir}/hypr/themes/theme.conf" # Useless and already handled by swwwallbash.sh but kept for robustness
 gtkTheme="$(
 { grep -q "^[[:space:]]*\$GTK[-_]THEME\s*=" "${hydeThemeDir}/hypr.theme" && grep "^[[:space:]]*\$GTK[-_]THEME\s*=" "${hydeThemeDir}/hypr.theme" | cut -d '=' -f2 | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' ;} || 

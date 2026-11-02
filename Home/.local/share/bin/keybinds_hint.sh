@@ -6,6 +6,9 @@
 #* Khing 🦆
 
 pkill -x rofi && exit
+if [ -f "$HOME/.config/hypr/recovery/binds.json" ]; then
+  exec python "$HOME/.config/hypr/recovery/keybind-menu.py" "$@"
+fi
 scrDir=$(dirname "$(realpath "$0")")
 source "$scrDir/globalcontrol.sh"
 

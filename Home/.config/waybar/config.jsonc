@@ -19,7 +19,7 @@
         "custom/padd", "custom/l_end", "wlr/taskbar", "custom/r_end", "custom/padd"
     ],
     "modules-right": [
-        "custom/padd", "custom/l_end", "custom/productivity-manager", "custom/session-restore", "custom/dotfiles-sync", "custom/timer-manager", "custom/r_end",
+        "custom/padd", "custom/l_end", "custom/productivity-manager", "custom/codexbar", "custom/opencode-go", "custom/session-restore", "custom/dotfiles-sync", "custom/timer-manager", "custom/r_end",
         "custom/l_end", "backlight", "network", "pulseaudio", "pulseaudio#microphone", "custom/updates", "custom/notifications", "custom/keybindhint", "custom/r_end",
         "custom/l_end", "privacy", "tray", "battery", "custom/r_end",
         "custom/padd", "custom/l_end", "custom/wallchange", "custom/theme", "custom/cliphist", "custom/power", "custom/r_end", "custom/padd"
@@ -43,7 +43,7 @@
     },
     "hyprland/workspaces": {
         "disable-scroll": true, "rotate": 0, "all-outputs": true, "active-only": false, "on-click": "activate",
-        "on-scroll-up": "hyprctl dispatch workspace -1", "on-scroll-down": "hyprctl dispatch workspace +1",
+        "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"-1\" })'", "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"+1\" })'",
         "persistent-workspaces": {}
     },
     "wlr/taskbar": {
@@ -80,7 +80,21 @@
     "custom/updates": {
         "exec": "systemupdate.sh",
         "return-type": "json", "format": "{}", "rotate": 0,
-        "on-click": "hyprctl dispatch exec 'systemupdate.sh up'", "interval": 86400, "tooltip": true, "signal": 20
+        "on-click": "systemupdate.sh up", "interval": 86400, "tooltip": true, "signal": 20
+    },
+    "custom/codexbar": {
+        "exec": "codexbar",
+        "return-type": "json",
+        "interval": 300,
+        "signal": 12,
+        "tooltip": true,
+        "on-click": "xdg-open https://chatgpt.com/codex/settings/usage"
+    },
+    "custom/opencode-go": {
+        "exec": "/home/ahmed/.local/bin/opencode-go-waybar",
+        "return-type": "json",
+        "interval": 300,
+        "tooltip": true
     },
     "custom/keybindhint": {
         "format": " ", "rotate": 0, "on-click": "keybinds_hint.sh"

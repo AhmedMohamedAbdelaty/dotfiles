@@ -107,6 +107,7 @@ save_session() {
     count="$(jq '.apps | length' "${STATE_FILE}")"
     echo "Saved ${count} app(s) to ${STATE_FILE}"
     notifications_enabled && notify_user "Session saved" "${count} app(s) saved."
+    return 0
 }
 
 class_running() {
@@ -182,16 +183,25 @@ restore_session() {
             continue
         fi
 
-        hyprctl dispatch exec "[workspace ${workspace} silent] ${command}" >/dev/null 2>&1 || true
+        local command_lua workspace_lua class_lua
+        command_lua="$(jq -cn --arg value "${command}" '$value')"
+        workspace_lua="$(jq -cn --arg value "${workspace} silent" '$value')"
+        class_lua="$(jq -cn --arg value "${class}" '$value')"
+        hyprctl dispatch "hl.dsp.exec_cmd(${command_lua}, { workspace = ${workspace_lua} })" >/dev/null 2>&1 || true
         launched=$((launched + 1))
 
         if [ "${floating}" = "true" ] && [ -n "${width}" ] && [ -n "${height}" ] && [ -n "${x}" ] && [ -n "${y}" ]; then
             (
                 sleep 2
-                hyprctl dispatch focuswindow "class:${class}" >/dev/null 2>&1 || exit 0
-                hyprctl dispatch togglefloating active >/dev/null 2>&1 || true
-                hyprctl dispatch resizeactive "exact ${width} ${height}" >/dev/null 2>&1 || true
-                hyprctl dispatch moveactive "exact ${x} ${y}" >/dev/null 2>&1 || true
+                [[ "${width} ${height} ${x} ${y}" =~ ^[0-9]+\ [0-9]+\ -?[0-9]+\ -?[0-9]+$ ]] || exit 0
+                hyprctl eval "for _, w in ipairs(hl.get_windows()) do
+                    if w.class == ${class_lua} then
+                        hl.dispatch(hl.dsp.window.float({ window = w, action = 'enable' }))
+                        hl.dispatch(hl.dsp.window.resize({ window = w, x = ${width}, y = ${height} }))
+                        hl.dispatch(hl.dsp.window.move({ window = w, x = ${x}, y = ${y} }))
+                        break
+                    end
+                end" >/dev/null 2>&1 || true
             ) &
         fi
     done < <(jq -r '.apps[] | [.name, .class, .command, (.workspace|tostring), (.floating|tostring), (.size[0] // ""), (.size[1] // ""), (.at[0] // ""), (.at[1] // "")] | @tsv' "${STATE_FILE}")
@@ -202,6 +212,7 @@ restore_session() {
 
     echo "Launched ${launched}, skipped ${skipped}, missing ${missing}"
     notifications_enabled && notify_user "Session restored" "Launched ${launched}, skipped ${skipped}, missing ${missing}."
+    return 0
 }
 
 status_text() {

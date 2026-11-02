@@ -3,7 +3,7 @@
         "return-type": "json",
         "format": "{}",
         "rotate": ${r_deg},
-        "on-click": "hyprctl dispatch exec 'systemupdate.sh up'",
+        "on-click": "systemupdate.sh up",
         "interval": 86400, // once every day
         "tooltip": true,
         "signal": 20,

@@ -737,15 +737,16 @@ def hyprland_panel():
         return
     if not address:
         return
+    window = json.dumps(f"address:{address}")
     if result.returncode == 10:
-        run(["hyprctl", "dispatch", "focuswindow", f"address:{address}"], timeout=0.7)
+        run(["hyprctl", "dispatch", f"hl.dsp.focus({{ window = {window} }})"], timeout=0.7)
     elif result.returncode == 20:
-        run(["hyprctl", "dispatch", "movetoworkspace", "current", f"address:{address}"], timeout=0.7)
+        run(["hyprctl", "dispatch", f"hl.dsp.window.move({{ window = {window}, workspace = 'current', follow = true }})"], timeout=0.7)
     elif result.returncode == 30:
-        run(["hyprctl", "dispatch", "togglefloating", f"address:{address}"], timeout=0.7)
+        run(["hyprctl", "dispatch", f"hl.dsp.window.float({{ window = {window}, action = 'toggle' }})"], timeout=0.7)
     elif result.returncode == 40:
         if yad_question("Close Window", "Close the selected window?", "Close"):
-            run(["hyprctl", "dispatch", "closewindow", f"address:{address}"], timeout=0.7)
+            run(["hyprctl", "dispatch", f"hl.dsp.window.close({{ window = {window} }})"], timeout=0.7)
     refresh()
 
 

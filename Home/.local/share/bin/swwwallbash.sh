@@ -229,7 +229,7 @@ fn_wallbash () {
 
 export -f fn_wallbash
 
-[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] &&  hyprctl keyword misc:disable_autoreload 1 -q && trap 'hyprctl reload -q && echo "[swwwallbash] reload :: Hyprland"' EXIT
+[ -n "$HYPRLAND_INSTANCE_SIGNATURE" ] && hyprctl eval 'hl.config({ misc = { disable_autoreload = true } })' -q && trap 'build_status=0; python "$HOME/.config/hypr/recovery/rebuild.py" || build_status=$?; hyprctl reload -q; exit "$build_status"' EXIT
 
 #// switch theme <//> wall based colors
 

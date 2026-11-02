@@ -30,7 +30,7 @@ fi
 
 x_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .width')
 y_mon=$(hyprctl -j monitors | jq '.[] | select(.focused==true) | .height')
-hypr_scale=$(hyprctl -j monitors | jq '.[] | select (.focused == true) | .scale' | sed 's/\.//')
+hypr_scale=$(hyprctl -j monitors | jq '.[] | select(.focused == true) | .scale * 100 | round')
 
 
 #// scale config layout and style

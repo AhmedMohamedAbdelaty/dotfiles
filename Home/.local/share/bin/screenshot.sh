@@ -3,15 +3,18 @@
 # Restores the shader after screenshot has been taken
 restore_shader() {
 	if [ -n "$shader" ]; then
-		hyprshade on "$shader"
+		shader_lua=$(jq -cn --arg value "$shader" '$value')
+		hyprctl eval "hl.config({ decoration = { screen_shader = ${shader_lua} } })" >/dev/null
 	fi
 }
 
 # Saves the current shader and turns it off
 save_shader() {
-	shader=$(hyprshade current)
-	hyprshade off
-	trap restore_shader EXIT
+	shader=$(hyprctl -j getoption decoration:screen_shader | jq -r '.str // empty')
+	if [ -n "$shader" ]; then
+		hyprctl eval 'hl.config({ decoration = { screen_shader = "" } })' >/dev/null
+		trap restore_shader EXIT
+	fi
 }
 
 save_shader # Saving the current shader

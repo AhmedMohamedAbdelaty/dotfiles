@@ -80,5 +80,7 @@ else
     echo "$new_source_line" >> "$animations_conf"
 fi
 
+python "$HOME/.config/hypr/recovery/rebuild.py" && hyprctl reload || exit 1
+
 # Notify the user
 notify-send "Animation Updated" "Sourced $selected_animation"

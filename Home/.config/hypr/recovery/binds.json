@@ -1,0 +1,692 @@
+[
+  {
+    "keybind": "Super + comma",
+    "description": "exec swaync-client -cp",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client -cp\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + comma",
+    "description": "exec swaync-client -C",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client -C\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + P",
+    "description": "Color Picker",
+    "handler": "hl.dsp.exec_cmd(\"hyprpicker -a\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Q",
+    "description": "exec /home/ahmed/.local/share/bin/dontkillsteam.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/dontkillsteam.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Alt + F4",
+    "description": "exec /home/ahmed/.local/share/bin/dontkillsteam.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/dontkillsteam.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Delete",
+    "description": "exit",
+    "handler": "hl.dsp.exit()",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + W",
+    "description": "togglefloating",
+    "handler": "hl.dsp.window.float({ action = \"toggle\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + G",
+    "description": "togglegroup",
+    "handler": "hl.dsp.group.toggle()",
+    "mouse": false
+  },
+  {
+    "keybind": "Alt + Return",
+    "description": "fullscreen",
+    "handler": "hl.dsp.window.fullscreen()",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + L",
+    "description": "exec swaylock",
+    "handler": "hl.dsp.exec_cmd(\"swaylock\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + F",
+    "description": "exec /home/ahmed/.local/share/bin/windowpin.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/windowpin.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Backspace",
+    "description": "exec /home/ahmed/.local/share/bin/logoutlaunch.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/logoutlaunch.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Ctrl + Alt + W",
+    "description": "exec killall waybar || waybar",
+    "handler": "hl.dsp.exec_cmd(\"killall waybar || waybar\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + T",
+    "description": "exec ~/.config/waybar/restart-tray.sh",
+    "handler": "hl.dsp.exec_cmd(\"~/.config/waybar/restart-tray.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + S",
+    "description": "exec bash /home/ahmed/.local/share/bin/hypr-session.sh save",
+    "handler": "hl.dsp.exec_cmd(\"bash /home/ahmed/.local/share/bin/hypr-session.sh save\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + R",
+    "description": "exec bash /home/ahmed/.local/share/bin/hypr-session.sh restore",
+    "handler": "hl.dsp.exec_cmd(\"bash /home/ahmed/.local/share/bin/hypr-session.sh restore\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Shift + S",
+    "description": "exec bash /home/ahmed/.local/share/bin/hypr-session.sh gui",
+    "handler": "hl.dsp.exec_cmd(\"bash /home/ahmed/.local/share/bin/hypr-session.sh gui\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Shift + D",
+    "description": "exec bash /home/ahmed/.local/share/bin/dotfiles-sync.sh gui",
+    "handler": "hl.dsp.exec_cmd(\"bash /home/ahmed/.local/share/bin/dotfiles-sync.sh gui\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + T",
+    "description": "exec kitty",
+    "handler": "hl.dsp.exec_cmd(\"kitty\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + E",
+    "description": "exec dolphin",
+    "handler": "hl.dsp.exec_cmd(\"dolphin\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + C",
+    "description": "exec code",
+    "handler": "hl.dsp.exec_cmd(\"code\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + F",
+    "description": "exec brave",
+    "handler": "hl.dsp.exec_cmd(\"brave\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Ctrl + Shift + Escape",
+    "description": "exec /home/ahmed/.local/share/bin/sysmonlaunch.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/sysmonlaunch.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + O",
+    "description": "exec obsidian",
+    "handler": "hl.dsp.exec_cmd(\"obsidian\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + A",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh d",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh d\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Tab",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh w",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh w\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + E",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh f",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh f\")",
+    "mouse": false
+  },
+  {
+    "keybind": "F10",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o m",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o m\")",
+    "mouse": false
+  },
+  {
+    "keybind": "F11",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o d",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o d\")",
+    "mouse": false
+  },
+  {
+    "keybind": "F12",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o i",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o i\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioMute",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o m",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o m\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioMicMute",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -i m",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -i m\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioLowerVolume",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o d",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o d\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioRaiseVolume",
+    "description": "exec /home/ahmed/.local/share/bin/volumecontrol.sh -o i",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o i\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioPlay",
+    "description": "exec playerctl play-pause",
+    "handler": "hl.dsp.exec_cmd(\"playerctl play-pause\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioPause",
+    "description": "exec playerctl play-pause",
+    "handler": "hl.dsp.exec_cmd(\"playerctl play-pause\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioNext",
+    "description": "exec playerctl next",
+    "handler": "hl.dsp.exec_cmd(\"playerctl next\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86AudioPrev",
+    "description": "exec playerctl previous",
+    "handler": "hl.dsp.exec_cmd(\"playerctl previous\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86MonBrightnessUp",
+    "description": "exec /home/ahmed/.local/share/bin/brightnesscontrol.sh i",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/brightnesscontrol.sh i\")",
+    "mouse": false
+  },
+  {
+    "keybind": "XF86MonBrightnessDown",
+    "description": "exec /home/ahmed/.local/share/bin/brightnesscontrol.sh d",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/brightnesscontrol.sh d\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + CTRL + H",
+    "description": "changegroupactive b",
+    "handler": "hl.dsp.group.prev()",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + CTRL + L",
+    "description": "changegroupactive f",
+    "handler": "hl.dsp.group.next()",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + P",
+    "description": "exec /home/ahmed/.local/share/bin/screenshot.sh s",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh s\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + P",
+    "description": "exec /home/ahmed/.local/share/bin/screenshot.sh sf",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh sf\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + P",
+    "description": "exec /home/ahmed/.local/share/bin/screenshot.sh m",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh m\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Print",
+    "description": "exec /home/ahmed/.local/share/bin/screenshot.sh p",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh p\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + G",
+    "description": "exec /home/ahmed/.local/share/bin/gamemode.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/gamemode.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + R",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/wallbashtoggle.sh -m",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/wallbashtoggle.sh -m\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + T",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/themeselect.sh",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/themeselect.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + A",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/rofiselect.sh",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/rofiselect.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + W",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/swwwallselect.sh",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/swwwallselect.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + V",
+    "description": "exec copyq show",
+    "handler": "hl.dsp.exec_cmd(\"copyq show\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + V",
+    "description": "exec copyq menu",
+    "handler": "hl.dsp.exec_cmd(\"copyq menu\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + K",
+    "description": "exec /home/ahmed/.local/share/bin/keyboardswitch.sh",
+    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/keyboardswitch.sh\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + slash",
+    "description": "exec pkill -x rofi || /home/ahmed/.local/share/bin/keybinds_hint.sh c",
+    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/keybinds_hint.sh c\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Left",
+    "description": "movefocus l",
+    "handler": "hl.dsp.focus({ direction = \"left\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Right",
+    "description": "movefocus r",
+    "handler": "hl.dsp.focus({ direction = \"right\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Up",
+    "description": "movefocus u",
+    "handler": "hl.dsp.focus({ direction = \"up\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Down",
+    "description": "movefocus d",
+    "handler": "hl.dsp.focus({ direction = \"down\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Alt + Tab",
+    "description": "movefocus d",
+    "handler": "hl.dsp.focus({ direction = \"down\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 1",
+    "description": "workspace 1",
+    "handler": "hl.dsp.focus({ workspace = 1 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 2",
+    "description": "workspace 2",
+    "handler": "hl.dsp.focus({ workspace = 2 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 3",
+    "description": "workspace 3",
+    "handler": "hl.dsp.focus({ workspace = 3 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 4",
+    "description": "workspace 4",
+    "handler": "hl.dsp.focus({ workspace = 4 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 5",
+    "description": "workspace 5",
+    "handler": "hl.dsp.focus({ workspace = 5 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 6",
+    "description": "workspace 6",
+    "handler": "hl.dsp.focus({ workspace = 6 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 7",
+    "description": "workspace 7",
+    "handler": "hl.dsp.focus({ workspace = 7 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 8",
+    "description": "workspace 8",
+    "handler": "hl.dsp.focus({ workspace = 8 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 9",
+    "description": "workspace 9",
+    "handler": "hl.dsp.focus({ workspace = 9 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + 0",
+    "description": "workspace 10",
+    "handler": "hl.dsp.focus({ workspace = 10 })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Right",
+    "description": "workspace r+1",
+    "handler": "hl.dsp.focus({ workspace = \"r+1\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Left",
+    "description": "workspace r-1",
+    "handler": "hl.dsp.focus({ workspace = \"r-1\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Down",
+    "description": "workspace empty",
+    "handler": "hl.dsp.focus({ workspace = \"empty\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + Right",
+    "description": "resizeactive 30 0",
+    "handler": "hl.dsp.window.resize({ [\"x\"] = 30, [\"y\"] = 0, [\"relative\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + Left",
+    "description": "resizeactive -30 0",
+    "handler": "hl.dsp.window.resize({ [\"x\"] = -30, [\"y\"] = 0, [\"relative\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + Up",
+    "description": "resizeactive 0 -30",
+    "handler": "hl.dsp.window.resize({ [\"x\"] = 0, [\"y\"] = -30, [\"relative\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + Down",
+    "description": "resizeactive 0 30",
+    "handler": "hl.dsp.window.resize({ [\"x\"] = 0, [\"y\"] = 30, [\"relative\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 1",
+    "description": "movetoworkspace 1",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 1, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 2",
+    "description": "movetoworkspace 2",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 2, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 3",
+    "description": "movetoworkspace 3",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 3, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 4",
+    "description": "movetoworkspace 4",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 4, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 5",
+    "description": "movetoworkspace 5",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 5, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 6",
+    "description": "movetoworkspace 6",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 6, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 7",
+    "description": "movetoworkspace 7",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 7, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 8",
+    "description": "movetoworkspace 8",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 8, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 9",
+    "description": "movetoworkspace 9",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 9, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Shift + 0",
+    "description": "movetoworkspace 10",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 10, [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Alt + Right",
+    "description": "movetoworkspace r+1",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = \"r+1\", [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Ctrl + Alt + Left",
+    "description": "movetoworkspace r-1",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = \"r-1\", [\"follow\"] = true })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + CTRL + left",
+    "description": "Move activewindow to the right",
+    "handler": "function() local w = hl.get_active_window(); if not w then return end; if w.floating then hl.dispatch(hl.dsp.window.move({ x = -30, y = 0, relative = true })) else hl.dispatch(hl.dsp.window.move({ direction = \"left\" })) end end",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + CTRL + right",
+    "description": "Move activewindow to the right",
+    "handler": "function() local w = hl.get_active_window(); if not w then return end; if w.floating then hl.dispatch(hl.dsp.window.move({ x = 30, y = 0, relative = true })) else hl.dispatch(hl.dsp.window.move({ direction = \"right\" })) end end",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + CTRL + up",
+    "description": "Move activewindow to the right",
+    "handler": "function() local w = hl.get_active_window(); if not w then return end; if w.floating then hl.dispatch(hl.dsp.window.move({ x = 0, y = -30, relative = true })) else hl.dispatch(hl.dsp.window.move({ direction = \"up\" })) end end",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + CTRL + down",
+    "description": "Move activewindow to the right",
+    "handler": "function() local w = hl.get_active_window(); if not w then return end; if w.floating then hl.dispatch(hl.dsp.window.move({ x = 0, y = 30, relative = true })) else hl.dispatch(hl.dsp.window.move({ direction = \"down\" })) end end",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + mouse_down",
+    "description": "workspace e+1",
+    "handler": "hl.dsp.focus({ workspace = \"e+1\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + mouse_up",
+    "description": "workspace e-1",
+    "handler": "hl.dsp.focus({ workspace = \"e-1\" })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + mouse:272",
+    "description": "movewindow",
+    "handler": "hl.dsp.window.drag()",
+    "mouse": true
+  },
+  {
+    "keybind": "Super + mouse:273",
+    "description": "resizewindow",
+    "handler": "hl.dsp.window.resize()",
+    "mouse": true
+  },
+  {
+    "keybind": "Super + Z",
+    "description": "movewindow",
+    "handler": "hl.dsp.window.drag()",
+    "mouse": true
+  },
+  {
+    "keybind": "Super + X",
+    "description": "resizewindow",
+    "handler": "hl.dsp.window.resize()",
+    "mouse": true
+  },
+  {
+    "keybind": "Super + Alt + S",
+    "description": "movetoworkspacesilent special",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = \"special\", [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + S",
+    "description": "togglespecialworkspace",
+    "handler": "hl.dsp.workspace.toggle_special(\"\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 1",
+    "description": "movetoworkspacesilent 1",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 1, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 2",
+    "description": "movetoworkspacesilent 2",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 2, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 3",
+    "description": "movetoworkspacesilent 3",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 3, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 4",
+    "description": "movetoworkspacesilent 4",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 4, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 5",
+    "description": "movetoworkspacesilent 5",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 5, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 6",
+    "description": "movetoworkspacesilent 6",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 6, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 7",
+    "description": "movetoworkspacesilent 7",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 7, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 8",
+    "description": "movetoworkspacesilent 8",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 8, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 9",
+    "description": "movetoworkspacesilent 9",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 9, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + Alt + 0",
+    "description": "movetoworkspacesilent 10",
+    "handler": "hl.dsp.window.move({ [\"workspace\"] = 10, [\"follow\"] = false })",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + N",
+    "description": "exec swaync-client -t -sw",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client -t -sw\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + SHIFT + N",
+    "description": "exec swaync-client -C",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client -C\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + CTRL + N",
+    "description": "exec swaync-client -d -sw",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client -d -sw\")",
+    "mouse": false
+  },
+  {
+    "keybind": "Super + ALT + N",
+    "description": "exec swaync-client --reload-config",
+    "handler": "hl.dsp.exec_cmd(\"swaync-client --reload-config\")",
+    "mouse": false
+  }
+]
