@@ -30,6 +30,6 @@ The active startup chain remains the original `hyprland.conf` and its includes. 
 
 Super+/ uses the original HyDE shortcut renderer, grouped sections, Rofi theme, font, icons and geometry overrides. `keybind-menu.py` adapts its metadata and selections to Lua actions.
 
-Waybar runs through the packaged `waybar.service` user unit. Startup imports the compositor's environment before starting it; Ctrl+Alt+W toggles the service, and game mode and layout generation restart it. This keeps the bar independent of a temporary launcher shell.
+Waybar runs through the packaged `waybar.service` user unit, enabled for `graphical-session.target` so it starts after the graphical session is ready. Startup imports the compositor's environment; Ctrl+Alt+W toggles the service, and game mode and layout generation restart it. Restore the autostart link with `systemctl --user enable waybar.service` if needed.
 
 The theme, wallpaper, style, animation and clipboard menus convert display scale numerically, including integer and fractional values. Theme and wallpaper menus fall back to the source image when a cached preview is missing. Rebuild previews with `swwwallcache.sh -t "Catppuccin Mocha"` or `swwwallcache.sh -w /path/to/image`.
