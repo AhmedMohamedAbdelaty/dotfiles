@@ -82,6 +82,18 @@
         },
         {
           "id": "cast",
+          "enabled": false
+        },
+        {
+          "id": "ocrScanner",
+          "enabled": true
+        },
+        {
+          "id": "codexUsage",
+          "enabled": false
+        },
+        {
+          "id": "networkIndicator",
           "enabled": true
         }
       ],
@@ -114,7 +126,7 @@
         },
         {
           "id": "clipboard",
-          "enabled": true
+          "enabled": false
         },
         {
           "id": "notificationButton",
