@@ -1,0 +1,64 @@
+{
+  "ahmedPrayer": {
+    "enabled": true
+  },
+  "ahmedTimer": {
+    "enabled": false
+  },
+  "ahmedProductivity": {
+    "enabled": false
+  },
+  "ahmedCodex": {
+    "enabled": true
+  },
+  "ahmedOpencode": {
+    "enabled": false
+  },
+  "ahmedSession": {
+    "enabled": false
+  },
+  "ahmedDotfiles": {
+    "enabled": false
+  },
+  "quickCapture": {
+    "enabled": true,
+    "showToolbar": true
+  },
+  "mediaPlayer": {
+    "enabled": true
+  },
+  "warpToggle": {
+    "enabled": true
+  },
+  "cast": {
+    "enabled": true
+  },
+  "codexUsage": {
+    "enabled": true
+  },
+  "prayerTimes": {
+    "enabled": true,
+    "method": "5",
+    "school": "0",
+    "lat": "30.0554928",
+    "lon": "31.3098769",
+    "iconOnly": false,
+    "showSeconds": false,
+    "use12H": true
+  },
+  "mediaControlPlus": {
+    "enabled": true
+  },
+  "networkIndicator": {
+    "enabled": true
+  },
+  "aiOverviewControl": {
+    "enabled": true
+  },
+  "timer": {
+    "enabled": true
+  },
+  "ocrScanner": {
+    "enabled": true
+  }
+}

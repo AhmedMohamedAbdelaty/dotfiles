@@ -142,6 +142,6 @@ $scrDir/wbarstylegen.sh
 
 # restart waybar
 
-if [ "$reload_flag" == "1" ] ; then
+if [ "$reload_flag" == "1" ] && ! systemctl --user is-active --quiet dms.service; then
     systemctl --user restart waybar.service
 fi

@@ -1,0 +1,302 @@
+#!/usr/bin/env python3
+"""Restore the desktop files saved before the Dux trial; never run implicitly."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import shlex
+import subprocess
+import sys
+import tarfile
+import tempfile
+from datetime import datetime
+
+HOME = Path.home()
+RECOVERY = HOME / ".local/state/hyprland-recovery"
+ORIGINAL = RECOVERY / "pre-dux-20261105-121547"
+THEME_SNAPSHOT = RECOVERY / "pre-dux-migration-20261105-124302"
+# Keep this list limited to pre-existing files affected by the Dux migration.
+FILES = (
+    ".config/hypr/hyprland.conf",
+    ".config/hypr/keybindings.conf",
+    ".config/hypr/hyprland.lua",
+    ".config/hypr/recovery/binds.json",
+    ".config/hypr/recovery/rebuild.py",
+    ".local/share/bin/gamemode.sh",
+    ".local/share/bin/wbarconfgen.sh",
+)
+THEME_FILES = (
+    ".config/gtk-3.0/settings.ini",
+    ".config/qt5ct/qt5ct.conf",
+    ".config/qt5ct/colors.conf",
+    ".config/qt6ct/qt6ct.conf",
+    ".config/qt6ct/colors.conf",
+    ".config/kitty/kitty.conf",
+    ".config/kitty/theme.conf",
+    ".config/kitty/userprefs.conf",
+)
+DUX_UNITS = ("dux-custom-poll.service", "dms.service", "dux-trial.service")
+
+
+def systemctl(*args, check=True):
+    result = subprocess.run(["systemctl", "--user", *args], text=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if check and result.returncode:
+        raise RuntimeError(f"systemctl {' '.join(args)}: {result.stderr.strip() or result.stdout.strip()}")
+    return result
+
+
+def safe_parent(relative):
+    path = HOME / relative
+    # Refuse symlinked ancestors, including HOME-relative directories.
+    current = HOME
+    for part in Path(relative).parts[:-1]:
+        current /= part
+        if current.is_symlink() or (current.exists() and not current.is_dir()):
+            raise RuntimeError(f"Unsafe or non-directory parent: {current}")
+    return path
+
+
+def load_archive(directory, archive_name, checksum_name, files):
+    archive = directory / archive_name
+    checksum = (directory / checksum_name).read_text().split()[0]
+    if len(checksum) != 64 or hashlib.sha256(archive.read_bytes()).hexdigest() != checksum.lower():
+        raise RuntimeError(f"Archive checksum does not match: {archive}; no changes made.")
+    contents = {}
+    with tarfile.open(archive, "r") as source:
+        members = source.getmembers()
+        for path in files:
+            matches = [m for m in members if m.name.rstrip("/") == path]
+            if len(matches) != 1 or not matches[0].isfile():
+                raise RuntimeError(f"Expected one regular archived file: {path}")
+            member = matches[0]
+            contents[path] = (source.extractfile(member).read(), member.mode & 0o777)
+            target = safe_parent(path)
+            if target.exists() and target.is_dir() and not target.is_symlink():
+                raise RuntimeError(f"Expected a file, found a directory: {target}")
+    return contents
+
+
+def load_original():
+    if (ORIGINAL / "waybar-enabled.txt").read_text().strip() != "enabled":
+        raise RuntimeError("Unexpected original Waybar state; inspect the snapshot before restoring.")
+    contents = load_archive(ORIGINAL, "desktop-config.tar", "desktop-config.sha256", FILES)
+    contents.update(load_archive(THEME_SNAPSHOT, "themes-before.tar", "themes-before.sha256", THEME_FILES))
+    return contents
+
+
+def make_backup():
+    # Include exactly the links that systemctl enable/disable can alter, plus unit files.
+    targets = list(FILES + THEME_FILES)
+    units = HOME / ".config/systemd/user"
+    names = (*DUX_UNITS, "waybar.service")
+    for name in names:
+        targets.append(f".config/systemd/user/{name}")
+        for target in ("default.target.wants", "graphical-session.target.wants"):
+            targets.append(f".config/systemd/user/{target}/{name}")
+    if units.is_dir():
+        for directory in units.iterdir():
+            if directory.is_dir() and not directory.is_symlink() and directory.name.endswith((".wants", ".requires")):
+                for name in names:
+                    targets.append(str((directory / name).relative_to(HOME)))
+    override = units / "dms.service.d"
+    targets.append(str(override.relative_to(HOME)))
+    if override.is_dir() and not override.is_symlink():
+        targets.extend(str(path.relative_to(HOME)) for path in override.rglob("*"))
+    # All absent paths are recorded so the backup is a complete before-image.
+    targets = sorted(set(targets))
+    for path in targets:
+        safe_parent(path)
+    backup_dir = Path(tempfile.mkdtemp(prefix="before-restore-pre-dux-" + datetime.now().strftime("%Y%m%d-%H%M%S") + "-", dir=RECOVERY))
+    archive = backup_dir / "before.tar"
+    manifest = {"paths": {}, "unit_states": {}}
+    for unit in names:
+        manifest["unit_states"][unit] = {
+            "active": systemctl("is-active", unit, check=False).stdout.strip(),
+            "enabled": systemctl("is-enabled", unit, check=False).stdout.strip(),
+        }
+    with tarfile.open(archive, "w") as out:
+        for relative in targets:
+            path = HOME / relative
+            present = path.exists() or path.is_symlink()
+            manifest["paths"][relative] = "present" if present else "absent"
+            if present:
+                out.add(path, arcname=relative, recursive=False)
+    with tarfile.open(archive, "r") as verify:
+        expected = {p for p, state in manifest["paths"].items() if state == "present"}
+        if {m.name for m in verify.getmembers()} != expected:
+            raise RuntimeError("Rollback-time backup verification failed; no changes made.")
+        for member in verify.getmembers():
+            if member.isfile():
+                verify.extractfile(member).read()
+    (backup_dir / "before.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (backup_dir / "before.sha256").write_text(hashlib.sha256(archive.read_bytes()).hexdigest() + "  before.tar\n")
+    print(f"Current files and service states saved to {backup_dir}", flush=True)
+    return backup_dir
+
+
+def restore_file(path, data, mode):
+    target = safe_parent(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd, tmp = tempfile.mkstemp(prefix=".restore-pre-dux-", dir=target.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            stream.write(data)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(tmp, mode)
+        os.replace(tmp, target)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
+
+def restore_polkit_agent(issues):
+    # Check this user's known desktop agents without interfering with other agents.
+    agents = {"polkit-gnome-authentication-agent-1", "polkit-kde-authentication-agent-1",
+              "lxqt-policykit-agent", "lxpolkit", "mate-polkit",
+              "polkit-mate-authentication-agent-1", "xfce-polkit", "hyprpolkitagent"}
+    result = subprocess.run(["ps", "-u", str(os.getuid()), "-o", "args="],
+                            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if result.returncode:
+        issues.append("Could not inspect running authentication agents; start polkitkdeauth.sh manually if needed.")
+        return
+    for line in result.stdout.splitlines():
+        try:
+            command = shlex.split(line)
+        except ValueError:
+            continue
+        if command and Path(command[0]).name in agents:
+            return
+    agent = HOME / ".local/share/bin/polkitkdeauth.sh"
+    if not agent.is_file() or not os.access(agent, os.X_OK):
+        issues.append("Authentication agent launcher is missing or not executable.")
+    elif subprocess.run([str(agent)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+        issues.append("Could not launch the authentication agent.")
+
+
+
+def restore_wallpaper(issues):
+    def daemon_state():
+        result = subprocess.run(["pgrep", "-u", str(os.getuid()), "-x",
+                                 "awww-daemon|swww-daemon"],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if result.returncode not in (0, 1):
+            raise RuntimeError("Could not inspect wallpaper daemons.")
+        return result.returncode == 0
+
+    try:
+        if daemon_state():
+            return
+        launcher = HOME / ".local/share/bin/swwwallpaper.sh"
+        if not launcher.is_file() or not os.access(launcher, os.X_OK):
+            raise RuntimeError("Wallpaper launcher is missing or not executable.")
+        result = subprocess.run([str(launcher)], stdout=subprocess.DEVNULL,
+                                stderr=subprocess.DEVNULL, timeout=30)
+        if result.returncode or not daemon_state():
+            raise RuntimeError("Wallpaper launcher did not start a wallpaper daemon; run it manually to inspect the error.")
+    except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+        issues.append(f"Wallpaper restoration failed: {exc}")
+
+
+
+def restore_clipboard_watchers(issues):
+    try:
+        result = subprocess.run(["ps", "-u", str(os.getuid()), "-ww", "-o", "args="],
+                                text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except OSError as exc:
+        issues.append(f"Could not inspect clipboard watchers: {exc}")
+        return
+    if result.returncode:
+        issues.append("Could not inspect clipboard watchers; start missing wl-paste watchers manually.")
+        return
+    running = set()
+    for line in result.stdout.splitlines():
+        try:
+            command = shlex.split(line)
+        except ValueError:
+            continue
+        if (len(command) == 6 and Path(command[0]).name == "wl-paste"
+                and command[1] == "--type" and command[2] in ("text", "image")
+                and command[3] == "--watch" and Path(command[4]).name == "cliphist"
+                and command[5] == "store"):
+            running.add(command[2])
+    missing = [kind for kind in ("text", "image") if kind not in running]
+    if not missing:
+        return
+    wl_paste, cliphist = shutil.which("wl-paste"), shutil.which("cliphist")
+    if not wl_paste or not cliphist:
+        unavailable = ", ".join(name for name, path in (("wl-paste", wl_paste), ("cliphist", cliphist)) if not path)
+        issues.append(f"Cannot restore clipboard watchers; missing executable(s): {unavailable}.")
+        return
+    for kind in missing:
+        try:
+            subprocess.Popen([wl_paste, "--type", kind, "--watch", cliphist, "store"],
+                             stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL, start_new_session=True)
+        except OSError as exc:
+            issues.append(f"Could not start the {kind} clipboard watcher: {exc}")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--apply", action="store_true", help="perform the restore after verifying and backing up")
+    args = parser.parse_args()
+    if not args.apply:
+        parser.print_help()
+        print("\nNo changes made. Read ~/.config/hypr/recovery/RESTORE-PRE-DUX.md first.")
+        return 0
+    original = load_original()
+    systemctl("show-environment")  # Do not change files if the user service manager is unreachable.
+    make_backup()
+    for unit in DUX_UNITS:
+        active = systemctl("is-active", unit, check=False).stdout.strip()
+        if active in ("active", "activating", "reloading", "deactivating"):
+            systemctl("stop", unit)
+        enabled = systemctl("is-enabled", unit, check=False).stdout.strip()
+        if enabled in ("enabled", "enabled-runtime", "linked", "linked-runtime", "indirect"):
+            systemctl("disable", unit)
+    for path, (data, mode) in original.items():
+        restore_file(path, data, mode)
+    systemctl("enable", "waybar.service")
+    issues = []
+    graphical = systemctl("is-active", "--quiet", "graphical-session.target", check=False).returncode == 0
+    if graphical:
+        restore_polkit_agent(issues)
+        restore_wallpaper(issues)
+        restore_clipboard_watchers(issues)
+        if systemctl("restart", "waybar.service", check=False).returncode:
+            issues.append("Could not start Waybar; run systemctl --user status waybar.service.")
+        if systemctl("is-active", "--quiet", "swaync.service", check=False).returncode == 0:
+            if systemctl("restart", "swaync.service", check=False).returncode:
+                issues.append("Could not restart swaync.service.")
+        elif shutil.which("pgrep") and subprocess.run(["pgrep", "-u", str(os.getuid()), "-x", "swaync"], stdout=subprocess.DEVNULL).returncode == 0:
+            if shutil.which("swaync-client") and subprocess.run(["swaync-client", "--reload-config"]).returncode:
+                issues.append("Could not reload the running swaync configuration.")
+        elif shutil.which("swaync"):
+            subprocess.Popen(["swaync"], start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            issues.append("swaync is not installed or not on PATH.")
+    else:
+        print("No active graphical session: Waybar, the authentication agent and clipboard watchers will start on the next login; start swaync in that session if needed.")
+    if os.environ.get("HYPRLAND_INSTANCE_SIGNATURE") and shutil.which("hyprctl"):
+        if subprocess.run(["hyprctl", "reload"], stdout=subprocess.DEVNULL).returncode:
+            issues.append("Hyprland reload failed; inspect hyprctl output or log out and back in.")
+    else:
+        print("No accessible Hyprland instance detected; log out and back in to load the restored configuration.")
+    for issue in issues:
+        print("WARNING: " + issue, file=sys.stderr)
+    print("Original pre-Dux desktop files restored. The original generated Lua was restored directly.")
+    return 1 if issues else 0
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except (OSError, RuntimeError, tarfile.TarError, IndexError) as exc:
+        print(f"Restore stopped: {exc}", file=sys.stderr)
+        print("If a backup was created, see RESTORE-PRE-DUX.md for recovery.", file=sys.stderr)
+        sys.exit(1)

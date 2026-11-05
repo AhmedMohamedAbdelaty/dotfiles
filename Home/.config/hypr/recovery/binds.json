@@ -2,20 +2,20 @@
   {
     "keybind": "Super + comma",
     "description": "Close latest notification",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client -cp\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call notifications dismiss\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client -cp",
+    "arg": "dms ipc call notifications dismiss",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Super + SHIFT + comma",
     "description": "Clear all notifications",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client -C\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call notifications clearAll\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client -C",
+    "arg": "dms ipc call notifications clearAll",
     "options": {},
     "has_description": true
   },
@@ -94,10 +94,10 @@
   {
     "keybind": "Super + L",
     "description": "Launch lock screen",
-    "handler": "hl.dsp.exec_cmd(\"swaylock\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call lock lock\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaylock",
+    "arg": "dms ipc call lock lock",
     "options": {},
     "has_description": true
   },
@@ -113,31 +113,31 @@
   },
   {
     "keybind": "Super + Backspace",
-    "description": "Launch logout menu",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/logoutlaunch.sh\")",
+    "description": "Launch power menu",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call powermenu toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/logoutlaunch.sh",
+    "arg": "dms ipc call powermenu toggle",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Ctrl + Alt + W",
-    "description": "Toggle waybar",
-    "handler": "hl.dsp.exec_cmd(\"systemctl --user is-active --quiet waybar.service && systemctl --user stop waybar.service || systemctl --user start waybar.service\")",
+    "description": "Toggle Dux bar",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call bar toggle id default\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "systemctl --user is-active --quiet waybar.service && systemctl --user stop waybar.service || systemctl --user start waybar.service",
+    "arg": "dms ipc call bar toggle id default",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Super + Ctrl + T",
-    "description": "Restart system tray",
-    "handler": "hl.dsp.exec_cmd(\"~/.config/waybar/restart-tray.sh\")",
+    "description": "Toggle control center",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call control-center toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "~/.config/waybar/restart-tray.sh",
+    "arg": "dms ipc call control-center toggle",
     "options": {},
     "has_description": true
   },
@@ -223,11 +223,11 @@
   },
   {
     "keybind": "Ctrl + Shift + Escape",
-    "description": "Launch system monitor (htop/btop or fallback to top)",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/sysmonlaunch.sh\")",
+    "description": "Launch system monitor",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call processlist toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/sysmonlaunch.sh",
+    "arg": "dms ipc call processlist toggle",
     "options": {},
     "has_description": true
   },
@@ -244,10 +244,10 @@
   {
     "keybind": "Super + A",
     "description": "Launch application launcher",
-    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh d\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call spotlight toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh d",
+    "arg": "dms ipc call spotlight toggle",
     "options": {},
     "has_description": true
   },
@@ -274,10 +274,10 @@
   {
     "keybind": "F10",
     "description": "Toggle audio mute",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o m\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio mute\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o m",
+    "arg": "dms ipc call audio mute",
     "options": {
       "locked": true
     },
@@ -286,10 +286,10 @@
   {
     "keybind": "F11",
     "description": "Decrease volume",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o d\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio decrement 5\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o d",
+    "arg": "dms ipc call audio decrement 5",
     "options": {
       "repeating": true,
       "locked": true
@@ -299,10 +299,10 @@
   {
     "keybind": "F12",
     "description": "Increase volume",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o i\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio increment 5\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o i",
+    "arg": "dms ipc call audio increment 5",
     "options": {
       "repeating": true,
       "locked": true
@@ -312,10 +312,10 @@
   {
     "keybind": "XF86AudioMute",
     "description": "Toggle audio mute",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o m\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio mute\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o m",
+    "arg": "dms ipc call audio mute",
     "options": {
       "locked": true
     },
@@ -324,10 +324,10 @@
   {
     "keybind": "XF86AudioMicMute",
     "description": "Toggle microphone mute",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -i m\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio micmute\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -i m",
+    "arg": "dms ipc call audio micmute",
     "options": {
       "locked": true
     },
@@ -336,10 +336,10 @@
   {
     "keybind": "XF86AudioLowerVolume",
     "description": "Decrease volume",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o d\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio decrement 5\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o d",
+    "arg": "dms ipc call audio decrement 5",
     "options": {
       "repeating": true,
       "locked": true
@@ -349,10 +349,10 @@
   {
     "keybind": "XF86AudioRaiseVolume",
     "description": "Increase volume",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/volumecontrol.sh -o i\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call audio increment 5\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/volumecontrol.sh -o i",
+    "arg": "dms ipc call audio increment 5",
     "options": {
       "repeating": true,
       "locked": true
@@ -410,10 +410,10 @@
   {
     "keybind": "XF86MonBrightnessUp",
     "description": "Increase brightness",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/brightnesscontrol.sh i\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call brightness increment 5 ''\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/brightnesscontrol.sh i",
+    "arg": "dms ipc call brightness increment 5 ''",
     "options": {
       "repeating": true,
       "locked": true
@@ -423,10 +423,10 @@
   {
     "keybind": "XF86MonBrightnessDown",
     "description": "Decrease brightness",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/brightnesscontrol.sh d\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call brightness decrement 5 ''\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/brightnesscontrol.sh d",
+    "arg": "dms ipc call brightness decrement 5 ''",
     "options": {
       "repeating": true,
       "locked": true
@@ -456,40 +456,60 @@
   {
     "keybind": "Super + P",
     "description": "Partial screenshot capture",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh s\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture screenshot region edit\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/screenshot.sh s",
+    "arg": "dms ipc call quickCapture screenshot region edit",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Super + Ctrl + P",
-    "description": "Partial screenshot capture (frozen screen)",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh sf\")",
+    "description": "Partial screenshot capture",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture screenshot region edit\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/screenshot.sh sf",
+    "arg": "dms ipc call quickCapture screenshot region edit",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Super + Alt + P",
     "description": "Monitor screenshot capture",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh m\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture screenshot full edit\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/screenshot.sh m",
+    "arg": "dms ipc call quickCapture screenshot full edit",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Print",
-    "description": "All monitors screenshot capture",
-    "handler": "hl.dsp.exec_cmd(\"/home/ahmed/.local/share/bin/screenshot.sh p\")",
+    "description": "Partial screenshot capture",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture screenshot region edit\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "/home/ahmed/.local/share/bin/screenshot.sh p",
+    "arg": "dms ipc call quickCapture screenshot region edit",
+    "options": {},
+    "has_description": true
+  },
+  {
+    "keybind": "SHIFT + Print",
+    "description": "Monitor screenshot capture",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture screenshot full edit\")",
+    "mouse": false,
+    "dispatcher": "exec",
+    "arg": "dms ipc call quickCapture screenshot full edit",
+    "options": {},
+    "has_description": true
+  },
+  {
+    "keybind": "CTRL + Print",
+    "description": "Annotate clipboard image",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call quickCapture fromClipboard edit\")",
+    "mouse": false,
+    "dispatcher": "exec",
+    "arg": "dms ipc call quickCapture fromClipboard edit",
     "options": {},
     "has_description": true
   },
@@ -515,11 +535,11 @@
   },
   {
     "keybind": "Super + Shift + T",
-    "description": "Launch theme select menu",
-    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/themeselect.sh\")",
+    "description": "Launch theme settings",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call settings toggleWith personalization\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "pkill -x rofi || /home/ahmed/.local/share/bin/themeselect.sh",
+    "arg": "dms ipc call settings toggleWith personalization",
     "options": {},
     "has_description": true
   },
@@ -536,22 +556,22 @@
   {
     "keybind": "Super + Shift + W",
     "description": "Launch wallpaper select menu",
-    "handler": "hl.dsp.exec_cmd(\"pkill -x rofi || /home/ahmed/.local/share/bin/swwwallselect.sh\")",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call dash toggle wallpaper\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "pkill -x rofi || /home/ahmed/.local/share/bin/swwwallselect.sh",
+    "arg": "dms ipc call dash toggle wallpaper",
     "options": {},
     "has_description": true
   },
   {
     "keybind": "Super + V",
-    "description": "exec copyq show",
-    "handler": "hl.dsp.exec_cmd(\"copyq show\")",
+    "description": "Open clipboard history",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call clipboard toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "copyq show",
+    "arg": "dms ipc call clipboard toggle",
     "options": {},
-    "has_description": false
+    "has_description": true
   },
   {
     "keybind": "Super + Shift + V",
@@ -1173,25 +1193,25 @@
   },
   {
     "keybind": "Super + SHIFT + ALT + F12",
-    "description": "Exit Dux trial and restore Waybar",
-    "handler": "hl.dsp.exec_cmd(\"~/.local/share/bin/dux-trial stop\")",
+    "description": "Restore the desktop from before Dux",
+    "handler": "hl.dsp.exec_cmd(\"kitty --hold ~/.local/share/bin/restore-pre-dux --apply\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "~/.local/share/bin/dux-trial stop",
+    "arg": "kitty --hold ~/.local/share/bin/restore-pre-dux --apply",
     "options": {
-      "description": "Exit Dux trial and restore Waybar"
+      "description": "Restore the desktop from before Dux"
     },
     "has_description": true
   },
   {
     "keybind": "Super + ALT + F12",
-    "description": "Start Dux trial",
-    "handler": "hl.dsp.exec_cmd(\"~/.local/share/bin/dux-trial start\")",
+    "description": "Start Dux Shell",
+    "handler": "hl.dsp.exec_cmd(\"systemctl --user start dms.service\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "~/.local/share/bin/dux-trial start",
+    "arg": "systemctl --user start dms.service",
     "options": {
-      "description": "Start Dux trial"
+      "description": "Start Dux Shell"
     },
     "has_description": true
   },
@@ -1221,42 +1241,42 @@
   },
   {
     "keybind": "Super + N",
-    "description": "exec swaync-client -t -sw",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client -t -sw\")",
+    "description": "Toggle notifications",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call notifications toggle\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client -t -sw",
+    "arg": "dms ipc call notifications toggle",
     "options": {},
-    "has_description": false
+    "has_description": true
   },
   {
     "keybind": "Super + SHIFT + N",
-    "description": "exec swaync-client -C",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client -C\")",
+    "description": "Clear notifications",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call notifications clearAll\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client -C",
+    "arg": "dms ipc call notifications clearAll",
     "options": {},
-    "has_description": false
+    "has_description": true
   },
   {
     "keybind": "Super + CTRL + N",
-    "description": "exec swaync-client -d -sw",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client -d -sw\")",
+    "description": "Toggle do not disturb",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call notifications toggleDoNotDisturb\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client -d -sw",
+    "arg": "dms ipc call notifications toggleDoNotDisturb",
     "options": {},
-    "has_description": false
+    "has_description": true
   },
   {
     "keybind": "Super + ALT + N",
-    "description": "exec swaync-client --reload-config",
-    "handler": "hl.dsp.exec_cmd(\"swaync-client --reload-config\")",
+    "description": "Notification settings",
+    "handler": "hl.dsp.exec_cmd(\"dms ipc call settings toggleWith notifications\")",
     "mouse": false,
     "dispatcher": "exec",
-    "arg": "swaync-client --reload-config",
+    "arg": "dms ipc call settings toggleWith notifications",
     "options": {},
-    "has_description": false
+    "has_description": true
   }
 ]

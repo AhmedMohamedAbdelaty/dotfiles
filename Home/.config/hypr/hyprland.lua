@@ -10,15 +10,10 @@ startup[#startup + 1] = "/home/ahmed/.local/share/bin/resetxdgportal.sh"
 startup[#startup + 1] = "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
 startup[#startup + 1] = "dbus-update-activation-environment --systemd --all"
 startup[#startup + 1] = "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-startup[#startup + 1] = "/home/ahmed/.local/share/bin/polkitkdeauth.sh"
 startup[#startup + 1] = "systemctl --user import-environment PATH WAYLAND_DISPLAY HYPRLAND_INSTANCE_SIGNATURE XDG_CURRENT_DESKTOP"
 startup[#startup + 1] = "blueman-applet"
 startup[#startup + 1] = "udiskie --no-automount --smart-tray"
 startup[#startup + 1] = "nm-applet --indicator"
-startup[#startup + 1] = "swaync"
-startup[#startup + 1] = "wl-paste --type text --watch cliphist store"
-startup[#startup + 1] = "wl-paste --type image --watch cliphist store"
-startup[#startup + 1] = "/home/ahmed/.local/share/bin/swwwallpaper.sh"
 startup[#startup + 1] = "/home/ahmed/.local/share/bin/batterynotify.sh"
 do local path = os.getenv("PATH") or "/usr/local/bin:/usr/bin"; local scripts = "/home/ahmed/.local/share/bin"; if not (":" .. path .. ":"):find(":" .. scripts .. ":", 1, true) then path = path .. ":" .. scripts end; hl.env("PATH", path) end
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
@@ -66,8 +61,8 @@ hl.animation({ ["leaf"] = "workspaces", ["enabled"] = true, ["speed"] = 5.0, ["b
 hl.animation({ ["leaf"] = "specialWorkspace", ["enabled"] = true, ["speed"] = 5.0, ["bezier"] = "wind", ["style"] = "slidevert" })
 
 -- keybindings.conf
-hl.bind("Super + comma", hl.dsp.exec_cmd("swaync-client -cp"))
-hl.bind("Super + SHIFT + comma", hl.dsp.exec_cmd("swaync-client -C"))
+hl.bind("Super + comma", hl.dsp.exec_cmd("dms ipc call notifications dismiss"))
+hl.bind("Super + SHIFT + comma", hl.dsp.exec_cmd("dms ipc call notifications clearAll"))
 hl.bind("Super + Shift + P", hl.dsp.exec_cmd("hyprpicker -a"), { ["description"] = "Color Picker" })
 hl.bind("Super + Q", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/dontkillsteam.sh"))
 hl.bind("Alt + F4", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/dontkillsteam.sh"))
@@ -75,11 +70,11 @@ hl.bind("Super + Delete", hl.dsp.exit())
 hl.bind("Super + W", hl.dsp.window.float({ action = "toggle" }))
 hl.bind("Super + G", hl.dsp.group.toggle())
 hl.bind("Alt + Return", hl.dsp.window.fullscreen())
-hl.bind("Super + L", hl.dsp.exec_cmd("swaylock"))
+hl.bind("Super + L", hl.dsp.exec_cmd("dms ipc call lock lock"))
 hl.bind("Super + Shift + F", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/windowpin.sh"))
-hl.bind("Super + Backspace", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/logoutlaunch.sh"))
-hl.bind("Ctrl + Alt + W", hl.dsp.exec_cmd("systemctl --user is-active --quiet waybar.service && systemctl --user stop waybar.service || systemctl --user start waybar.service"))
-hl.bind("Super + Ctrl + T", hl.dsp.exec_cmd("~/.config/waybar/restart-tray.sh"))
+hl.bind("Super + Backspace", hl.dsp.exec_cmd("dms ipc call powermenu toggle"))
+hl.bind("Ctrl + Alt + W", hl.dsp.exec_cmd("dms ipc call bar toggle id default"))
+hl.bind("Super + Ctrl + T", hl.dsp.exec_cmd("dms ipc call control-center toggle"))
 hl.bind("Super + Ctrl + S", hl.dsp.exec_cmd("bash /home/ahmed/.local/share/bin/hypr-session.sh save"))
 hl.bind("Super + Ctrl + R", hl.dsp.exec_cmd("bash /home/ahmed/.local/share/bin/hypr-session.sh restore"))
 hl.bind("Super + Ctrl + Shift + S", hl.dsp.exec_cmd("bash /home/ahmed/.local/share/bin/hypr-session.sh gui"))
@@ -88,36 +83,38 @@ hl.bind("Super + T", hl.dsp.exec_cmd("kitty"))
 hl.bind("Super + E", hl.dsp.exec_cmd("dolphin"))
 hl.bind("Super + C", hl.dsp.exec_cmd("code"))
 hl.bind("Super + F", hl.dsp.exec_cmd("brave"))
-hl.bind("Ctrl + Shift + Escape", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/sysmonlaunch.sh"))
+hl.bind("Ctrl + Shift + Escape", hl.dsp.exec_cmd("dms ipc call processlist toggle"))
 hl.bind("Super + O", hl.dsp.exec_cmd("obsidian"))
-hl.bind("Super + A", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh d"))
+hl.bind("Super + A", hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
 hl.bind("Super + Tab", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh w"))
 hl.bind("Super + Shift + E", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/rofilaunch.sh f"))
-hl.bind("F10", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o m"), { ["locked"] = true })
-hl.bind("F11", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o d"), { ["repeating"] = true, ["locked"] = true })
-hl.bind("F12", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o i"), { ["repeating"] = true, ["locked"] = true })
-hl.bind("XF86AudioMute", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o m"), { ["locked"] = true })
-hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -i m"), { ["locked"] = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o d"), { ["repeating"] = true, ["locked"] = true })
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/volumecontrol.sh -o i"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("F10", hl.dsp.exec_cmd("dms ipc call audio mute"), { ["locked"] = true })
+hl.bind("F11", hl.dsp.exec_cmd("dms ipc call audio decrement 5"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("F12", hl.dsp.exec_cmd("dms ipc call audio increment 5"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("XF86AudioMute", hl.dsp.exec_cmd("dms ipc call audio mute"), { ["locked"] = true })
+hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("dms ipc call audio micmute"), { ["locked"] = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("dms ipc call audio decrement 5"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("dms ipc call audio increment 5"), { ["repeating"] = true, ["locked"] = true })
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"), { ["locked"] = true })
 hl.bind("XF86AudioPause", hl.dsp.exec_cmd("playerctl play-pause"), { ["locked"] = true })
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"), { ["locked"] = true })
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"), { ["locked"] = true })
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/brightnesscontrol.sh i"), { ["repeating"] = true, ["locked"] = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/brightnesscontrol.sh d"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("dms ipc call brightness increment 5 ''"), { ["repeating"] = true, ["locked"] = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("dms ipc call brightness decrement 5 ''"), { ["repeating"] = true, ["locked"] = true })
 hl.bind("Super + CTRL + H", hl.dsp.group.prev())
 hl.bind("Super + CTRL + L", hl.dsp.group.next())
-hl.bind("Super + P", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/screenshot.sh s"))
-hl.bind("Super + Ctrl + P", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/screenshot.sh sf"))
-hl.bind("Super + Alt + P", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/screenshot.sh m"))
-hl.bind("Print", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/screenshot.sh p"))
+hl.bind("Super + P", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))
+hl.bind("Super + Ctrl + P", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))
+hl.bind("Super + Alt + P", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot full edit"))
+hl.bind("Print", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot region edit"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("dms ipc call quickCapture screenshot full edit"))
+hl.bind("CTRL + Print", hl.dsp.exec_cmd("dms ipc call quickCapture fromClipboard edit"))
 hl.bind("Super + Alt + G", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/gamemode.sh"))
 hl.bind("Super + Shift + R", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/wallbashtoggle.sh -m"))
-hl.bind("Super + Shift + T", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/themeselect.sh"))
+hl.bind("Super + Shift + T", hl.dsp.exec_cmd("dms ipc call settings toggleWith personalization"))
 hl.bind("Super + Shift + A", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/rofiselect.sh"))
-hl.bind("Super + Shift + W", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/swwwallselect.sh"))
-hl.bind("Super + V", hl.dsp.exec_cmd("copyq show"))
+hl.bind("Super + Shift + W", hl.dsp.exec_cmd("dms ipc call dash toggle wallpaper"))
+hl.bind("Super + V", hl.dsp.exec_cmd("dms ipc call clipboard toggle"))
 hl.bind("Super + Shift + V", hl.dsp.exec_cmd("copyq menu"))
 hl.bind("Super + K", hl.dsp.exec_cmd("/home/ahmed/.local/share/bin/keyboardswitch.sh"))
 hl.bind("Super + slash", hl.dsp.exec_cmd("pkill -x rofi || /home/ahmed/.local/share/bin/keybinds_hint.sh c"))
@@ -178,14 +175,14 @@ hl.bind("Super + Alt + 7", hl.dsp.window.move({ ["workspace"] = 7, ["follow"] = 
 hl.bind("Super + Alt + 8", hl.dsp.window.move({ ["workspace"] = 8, ["follow"] = false }))
 hl.bind("Super + Alt + 9", hl.dsp.window.move({ ["workspace"] = 9, ["follow"] = false }))
 hl.bind("Super + Alt + 0", hl.dsp.window.move({ ["workspace"] = 10, ["follow"] = false }))
-hl.bind("Super + SHIFT + ALT + F12", hl.dsp.exec_cmd("~/.local/share/bin/dux-trial stop"), { ["description"] = "Exit Dux trial and restore Waybar" })
-hl.bind("Super + ALT + F12", hl.dsp.exec_cmd("~/.local/share/bin/dux-trial start"), { ["description"] = "Start Dux trial" })
+hl.bind("Super + SHIFT + ALT + F12", hl.dsp.exec_cmd("kitty --hold ~/.local/share/bin/restore-pre-dux --apply"), { ["description"] = "Restore the desktop from before Dux" })
+hl.bind("Super + ALT + F12", hl.dsp.exec_cmd("systemctl --user start dms.service"), { ["description"] = "Start Dux Shell" })
 hl.bind("Super + Y", function() pcall(function() hl.plugin.hymission.toggle() end) end, { ["description"] = "Mission Control" })
 hl.bind("Super + SHIFT + Y", function() pcall(function() hl.plugin.hymission.toggle("forceall") end) end, { ["description"] = "Mission Control on all workspaces" })
-hl.bind("Super + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
-hl.bind("Super + SHIFT + N", hl.dsp.exec_cmd("swaync-client -C"))
-hl.bind("Super + CTRL + N", hl.dsp.exec_cmd("swaync-client -d -sw"))
-hl.bind("Super + ALT + N", hl.dsp.exec_cmd("swaync-client --reload-config"))
+hl.bind("Super + N", hl.dsp.exec_cmd("dms ipc call notifications toggle"))
+hl.bind("Super + SHIFT + N", hl.dsp.exec_cmd("dms ipc call notifications clearAll"))
+hl.bind("Super + CTRL + N", hl.dsp.exec_cmd("dms ipc call notifications toggleDoNotDisturb"))
+hl.bind("Super + ALT + N", hl.dsp.exec_cmd("dms ipc call settings toggleWith notifications"))
 
 -- windowrules.conf
 hl.window_rule({ ["match"] = { ["class"] = "^(firefox)$" }, ["opacity"] = "0.90 0.90" })
@@ -368,6 +365,14 @@ hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 hl.env("__GL_VRR_ALLOWED", "1")
 hl.env("WLR_DRM_NO_ATOMIC", "1")
 hl.config({ ["cursor"] = { ["no_hardware_cursors"] = true } })
+
+-- Dux owns these optional fragments; the preserved .conf chain remains the base.
+for _, name in ipairs({ "colors", "outputs", "layout", "cursor", "input", "windowrules" }) do
+    local path = os.getenv("HOME") .. "/.config/hypr/dms/" .. name .. ".lua"
+    local file = io.open(path, "r")
+    if file then file:close(); dofile(path) end
+end
+
 
 local function refresh()
     if not hl.get_active_monitor() then return end

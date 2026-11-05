@@ -1,0 +1,12 @@
+[Unit]
+Description=Prayer and productivity reminders for Dux Shell
+After=dms.service
+PartOf=dms.service
+
+[Service]
+ExecStart=/usr/bin/python3 %h/.config/dms/shared/ahmed/poller.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=dms.service

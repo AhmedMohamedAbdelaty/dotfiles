@@ -1,0 +1,58 @@
+{
+  "lockfileVersion": 1,
+  "plugins": {
+    "aiOverviewControl": {
+      "repo": "https://github.com/bernardopg/AiOverviewControl",
+      "commit": "e8632e73d2aca4a7baea9d001ab8ecc0bddb702d"
+    },
+    "cast": {
+      "repo": "https://github.com/Conava/dux-plugins",
+      "path": "Cast",
+      "commit": "7b55937e68a3625ddb8243a4f2a23d0e4e42a59a"
+    },
+    "codexUsage": {
+      "repo": "https://github.com/mir4zul/codex-usage",
+      "commit": "2bf3469f91bf08b6b2e7d6dfa74e6294542f69fa"
+    },
+    "mediaControlPlus": {
+      "repo": "https://github.com/Dadangdut33/dms-plugins",
+      "path": "MediaControlPlus",
+      "commit": "63fe6b87c497f1f7c2ea61432716817db1c5c3a4"
+    },
+    "mediaPlayer": {
+      "repo": "https://github.com/bernardopg/mediaPlayer",
+      "commit": "0d4b75e7fe67942e1920e416124ef572c76e5dce"
+    },
+    "networkIndicator": {
+      "repo": "https://github.com/gemb0-0/Network-Indicator.git",
+      "commit": "7f5062350532495063e6c281e947d90cfecbeb37"
+    },
+    "ocrScanner": {
+      "repo": "https://github.com/hthienloc/dms-plugins",
+      "path": "ocrScanner",
+      "commit": "b8ec2719ad2fc4d09075882e957d16ca9387f398"
+    },
+    "prayerTimes": {
+      "repo": "https://github.com/muadzmo/prayertimes",
+      "commit": "d9ee1b1d51152b1d9ae792281d8e6a9a7f39a86a"
+    },
+    "quickCapture": {
+      "repo": "https://github.com/hthienloc/dms-plugins",
+      "path": "quickCapture",
+      "commit": "b8ec2719ad2fc4d09075882e957d16ca9387f398"
+    },
+    "quranWidget": {
+      "repo": "https://codeberg.org/MezoAhmedII/quranWidget",
+      "commit": "fb7485ec8458e0a3d2d257ff1b98fccd103cda4f"
+    },
+    "timer": {
+      "repo": "https://github.com/hthienloc/dms-plugins",
+      "path": "timer",
+      "commit": "b8ec2719ad2fc4d09075882e957d16ca9387f398"
+    },
+    "warpToggle": {
+      "repo": "https://github.com/ahmed-mekky/dms-warp-toggle",
+      "commit": "3bee1e952c626071167c4e0aedad6241f7f624e0"
+    }
+  }
+}

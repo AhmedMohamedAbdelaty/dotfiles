@@ -209,6 +209,14 @@ def read(path):
 def main():
     read(ROOT/'hyprland.conf')
     output.append('''
+-- Dux owns these optional fragments; the preserved .conf chain remains the base.
+for _, name in ipairs({ "colors", "outputs", "layout", "cursor", "input", "windowrules" }) do
+    local path = os.getenv("HOME") .. "/.config/hypr/dms/" .. name .. ".lua"
+    local file = io.open(path, "r")
+    if file then file:close(); dofile(path) end
+end
+''')
+    output.append('''
 local function refresh()
     if not hl.get_active_monitor() then return end
     -- Start search on demand so its helper does not delay overview input.

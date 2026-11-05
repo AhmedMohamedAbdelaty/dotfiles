@@ -1,0 +1,20 @@
+{
+  "id": "ahmedDotfiles",
+  "name": "Ahmed: Dotfiles",
+  "description": "Existing Dotfiles status for the Dux trial",
+  "version": "1.0.0",
+  "author": "Ahmed",
+  "type": "composite",
+  "capabilities": [
+    "daemon",
+    "dankbar-widget"
+  ],
+  "components": {
+    "daemon": "./Daemon.qml",
+    "widget": "./Widget.qml"
+  },
+  "permissions": [
+    "process"
+  ],
+  "requires_dms": ">=2.1.0"
+}
