@@ -50,10 +50,17 @@
         },
         {
           "id": "focusedWindow",
-          "enabled": true
+          "enabled": true,
+          "focusedWindowCompactMode": true,
+          "focusedWindowShowIcon": true,
+          "focusedWindowSize": 0
         },
         {
           "id": "prayerTimes",
+          "enabled": true
+        },
+        {
+          "id": "island",
           "enabled": true
         }
       ],
