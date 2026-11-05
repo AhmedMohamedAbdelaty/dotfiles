@@ -31,7 +31,7 @@
     "enabled": true
   },
   "cast": {
-    "enabled": true
+    "enabled": false
   },
   "codexUsage": {
     "enabled": true

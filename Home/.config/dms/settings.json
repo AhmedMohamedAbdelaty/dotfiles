@@ -60,7 +60,28 @@
           "enabled": true
         },
         {
-          "id": "island",
+          "id": "cpuUsage",
+          "enabled": false,
+          "minimumWidth": true
+        },
+        {
+          "id": "memUsage",
+          "enabled": true
+        },
+        {
+          "id": "privacyIndicator",
+          "enabled": true
+        },
+        {
+          "id": "notepadButton",
+          "enabled": false
+        },
+        {
+          "id": "warpToggle",
+          "enabled": true
+        },
+        {
+          "id": "cast",
           "enabled": true
         }
       ],
