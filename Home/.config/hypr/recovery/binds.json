@@ -1172,6 +1172,30 @@
     "has_description": false
   },
   {
+    "keybind": "Super + SHIFT + ALT + F12",
+    "description": "Exit Dux trial and restore Waybar",
+    "handler": "hl.dsp.exec_cmd(\"~/.local/share/bin/dux-trial stop\")",
+    "mouse": false,
+    "dispatcher": "exec",
+    "arg": "~/.local/share/bin/dux-trial stop",
+    "options": {
+      "description": "Exit Dux trial and restore Waybar"
+    },
+    "has_description": true
+  },
+  {
+    "keybind": "Super + ALT + F12",
+    "description": "Start Dux trial",
+    "handler": "hl.dsp.exec_cmd(\"~/.local/share/bin/dux-trial start\")",
+    "mouse": false,
+    "dispatcher": "exec",
+    "arg": "~/.local/share/bin/dux-trial start",
+    "options": {
+      "description": "Start Dux trial"
+    },
+    "has_description": true
+  },
+  {
     "keybind": "Super + Y",
     "description": "Mission Control",
     "handler": "function() pcall(function() hl.plugin.hymission.toggle() end) end",

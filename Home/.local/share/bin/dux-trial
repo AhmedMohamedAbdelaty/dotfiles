@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+trial="$HOME/.local/opt/dux-trial/usr"
+marker="${XDG_RUNTIME_DIR:?}/dux-trial-restore-waybar"
+
+case "${1:-}" in
+  start)
+    systemctl --user start dux-trial.service
+    ;;
+  stop)
+    systemctl --user stop dux-trial.service
+    ;;
+  run)
+    if [[ -e "$marker" ]] && ! systemctl --user is-active --quiet waybar.service; then
+      printf '%s\n' 'Previous Waybar restoration is still pending.' >&2
+      exit 1
+    fi
+    rm -f "$marker"
+    if systemctl --user is-active --quiet waybar.service; then
+      : > "$marker"
+      systemctl --user stop waybar.service
+    fi
+    export PATH="$trial/bin:$PATH"
+    export LD_LIBRARY_PATH="$trial/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    export QML_IMPORT_PATH="$trial/lib/qt6/qml${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+    export DMS_DISABLE_POLKIT=1 DMS_DISABLE_MATUGEN=1 GSETTINGS_BACKEND=memory
+    exec "$trial/bin/dms" run
+    ;;
+  restore)
+    if [[ -f "$marker" ]]; then
+      if systemctl --user is-active --quiet graphical-session.target; then
+        systemctl --user start waybar.service
+        rm -f "$marker"
+      fi
+    fi
+    ;;
+  *)
+    printf 'Usage: %s {start|stop}\n' "$0" >&2
+    exit 2
+    ;;
+esac

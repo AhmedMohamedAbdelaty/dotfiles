@@ -1,0 +1,12 @@
+[Unit]
+Description=Temporary Dux Shell trial
+After=graphical-session.target
+Requisite=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/share/bin/dux-trial run
+ExecStopPost=%h/.local/share/bin/dux-trial restore
+Restart=no
+TimeoutStopSec=10

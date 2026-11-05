@@ -178,6 +178,8 @@ hl.bind("Super + Alt + 7", hl.dsp.window.move({ ["workspace"] = 7, ["follow"] = 
 hl.bind("Super + Alt + 8", hl.dsp.window.move({ ["workspace"] = 8, ["follow"] = false }))
 hl.bind("Super + Alt + 9", hl.dsp.window.move({ ["workspace"] = 9, ["follow"] = false }))
 hl.bind("Super + Alt + 0", hl.dsp.window.move({ ["workspace"] = 10, ["follow"] = false }))
+hl.bind("Super + SHIFT + ALT + F12", hl.dsp.exec_cmd("~/.local/share/bin/dux-trial stop"), { ["description"] = "Exit Dux trial and restore Waybar" })
+hl.bind("Super + ALT + F12", hl.dsp.exec_cmd("~/.local/share/bin/dux-trial start"), { ["description"] = "Start Dux trial" })
 hl.bind("Super + Y", function() pcall(function() hl.plugin.hymission.toggle() end) end, { ["description"] = "Mission Control" })
 hl.bind("Super + SHIFT + Y", function() pcall(function() hl.plugin.hymission.toggle("forceall") end) end, { ["description"] = "Mission Control on all workspaces" })
 hl.bind("Super + N", hl.dsp.exec_cmd("swaync-client -t -sw"))
