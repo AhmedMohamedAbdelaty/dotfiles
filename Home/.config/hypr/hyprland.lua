@@ -1,8 +1,8 @@
 -- Restored from the preserved HyDE .conf source chain.
 -- Rebuild after editing those files: python ~/.config/hypr/recovery/rebuild.py
 local startup, reload = {}, {}
--- HyMission checks its Hyprland ABI before loading; failure must not break the desktop.
-pcall(hl.plugin.load, os.getenv("HOME") .. "/.local/lib/hymission.so")
+-- Native plugins run inside Hyprland and can crash the desktop.
+-- HyMission disabled after crash; restore only after compatibility testing.
 
 -- hyprland.conf
 hl.monitor({ ["output"] = "", ["mode"] = "preferred", ["position"] = "auto", ["scale"] = "auto" })
@@ -376,8 +376,7 @@ end
 
 local function refresh()
     if not hl.get_active_monitor() then return end
-    -- Start search on demand so its helper does not delay overview input.
-    pcall(function() hl.config({ plugin = { hymission = { vim_keys = true } } }) end)
+    -- HyMission settings are disabled until the plugin is safe to use.
     for _, command in ipairs(reload) do hl.exec_cmd(command) end
 end
 hl.on("config.reloaded", refresh)

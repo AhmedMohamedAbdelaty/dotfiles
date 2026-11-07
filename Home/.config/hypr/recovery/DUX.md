@@ -2,7 +2,7 @@
 
 - Dux starts with the graphical session through the packaged `dms.service`. `dux-custom-poll.service` preserves prayer reminders, timer alarms, and their status output independently of the bar's visibility.
 - Super+A opens the Dux launcher; Super+V opens its clipboard; Super+N opens its notifications; Super+L locks the screen. Super+Shift+V retains the old CopyQ menu, including its history.
-- Quick Capture opens with Print or Super+P. Shift+Print captures the current monitor; Ctrl+Print edits an image from the clipboard. The Super+/ shortcut menu and HyMission on Super+Y remain.
+- Quick Capture opens with Print or Super+P. Shift+Print captures the current monitor; Ctrl+Print edits an image from the clipboard. The Super+/ shortcut menu remains. HyMission shortcuts are temporarily disabled after a crash; see HYMISSION.md.
 - The bar displays prayer times, Codex usage and the Dux Timer plugin. The previous timer manager still runs its reminder checks in the background. The OpenCode, productivity, session and dotfiles widgets are installed but disabled; enable them in Dux settings if wanted. Their original scripts remain in place.
 - Third-party plugin revisions are recorded in `~/.config/dms/plugins.lock.json`; restore them with `dms plugins restore` on a new installation. Private clipboard contents and launcher history stay out of the public dotfiles repository.
 - Super+Shift+Alt+F12 opens the rollback command in a terminal. The command verifies the snapshots and saves the current files and service state before restoring the pre-Dux setup. See `RESTORE-PRE-DUX.md` for details and manual recovery.
